@@ -3,6 +3,7 @@ require 'net/https'
 require 'json'
 require 'telegram/bot'
 require 'open-uri'
+require_relative "./database"
 
 module Instapipe
   class Instapipe
@@ -48,26 +49,46 @@ module Instapipe
 
         version["is_video"] = is_video
         version["id"] = item["id"]
-        version # collect those
-      end
+        version["timestamp"] = item["taken_at"] # TODO: investigate if that's the right one, alternative is `device_timestamp`
+        if Database.database[:stories].where(ig_id: version["id"])
+          nil # we already have this in our db
+        else
+          version # collect those
+        end
+      end.compact
 
-      require 'pry'; binding.pry
+      puts "Storing #{items.count} in database and send it via Telegram"
       chat_id = ENV["TELEGRAM_CHAT_ID"]
       items.each do |item|
         puts "Uploading #{item}"
         file_path = File.join("/tmp/", item["id"])
         File.write(file_path, open(item["url"]).read)
-        if item["is_video"]
-          puts "Uploading video... this might take a little longer"
-          self.telegram_client.api.send_video(
-            chat_id: chat_id,
-            video: Faraday::UploadIO.new(file_path, 'video/mp4')
-          )
-        else
-          self.telegram_client.api.send_photo(
-            chat_id: chat_id,
-            photo: Faraday::UploadIO.new(file_path, 'image/jpg')
-          )
+
+        begin
+          if item["is_video"]
+            puts "Uploading video... this might take a little longer"
+            self.telegram_client.api.send_video(
+              chat_id: chat_id,
+              video: Faraday::UploadIO.new(file_path, 'video/mp4')
+            )
+          else
+            self.telegram_client.api.send_photo(
+              chat_id: chat_id,
+              photo: Faraday::UploadIO.new(file_path, 'image/jpg')
+            )
+          end
+
+          # only after successfully posting it, store in db
+          Database.database[:stories].insert({
+            ig_id: item["id"],
+            url: item["url"],
+            height: item["height"],
+            width: item["width"],
+            timestamp: item["timestamp"],
+            is_video: item["is_video"]
+          })
+        rescue => ex
+          puts ex
         end
       end
 
