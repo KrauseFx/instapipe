@@ -53,12 +53,16 @@ GEM
     mime-types-data (3.2018.0812)
     multi_json (1.13.1)
     multipart-post (2.0.0)
+    mustermann (1.0.3)
     os (1.0.0)
     pg (1.1.4)
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     public_suffix (3.0.3)
+    rack (2.0.6)
+    rack-protection (2.0.5)
+      rack
     rake (12.3.2)
     representable (3.0.4)
       declarative (< 0.1.0)
@@ -71,11 +75,17 @@ GEM
       faraday (~> 0.9)
       jwt (>= 1.5, < 3.0)
       multi_json (~> 1.10)
+    sinatra (2.0.5)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.5)
+      tilt (~> 2.0)
     telegram-bot-ruby (0.8.6.1)
       faraday
       inflecto
       virtus
     thread_safe (0.3.6)
+    tilt (2.0.9)
     uber (0.1.0)
     virtus (1.0.5)
       axiom-types (~> 0.1)
@@ -92,6 +102,7 @@ DEPENDENCIES
   pry
   rake
   sequel
+  sinatra
   telegram-bot-ruby
 
 BUNDLED WITH

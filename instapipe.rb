@@ -82,7 +82,7 @@ module Instapipe
           extension = item["is_video"] ? ".mp4" : ".jpg"
           output_path = File.join(user_id, "#{item['id']}#{extension}")
           puts "uploading file to Google Cloud #{output_path}"
-          created_file = Database.file_storage.create_file(file_path, output_path)
+          created_file = Database.file_storage_bucket.create_file(file_path, output_path)
 
           signed_url = created_file.signed_url(method: "GET", expires: 24 * 60 * 60) # expires in 24h
 
