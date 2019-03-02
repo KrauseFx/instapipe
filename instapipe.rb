@@ -50,7 +50,7 @@ module Instapipe
         version["is_video"] = is_video
         version["id"] = item["id"]
         version["timestamp"] = item["taken_at"] # TODO: investigate if that's the right one, alternative is `device_timestamp`
-        if Database.database[:stories].where(ig_id: version["id"])
+        if Database.database[:stories].where(ig_id: version["id"]).count > 0
           nil # we already have this in our db
         else
           version # collect those
@@ -65,6 +65,7 @@ module Instapipe
         File.write(file_path, open(item["url"]).read)
 
         begin
+          # TODO: Obviously refactor to separate Telegram from rest
           if item["is_video"]
             puts "Uploading video... this might take a little longer"
             self.telegram_client.api.send_video(
@@ -97,7 +98,3 @@ module Instapipe
     end
   end
 end
-
-instapipe = Instapipe::Instapipe.new(sessionid: ENV["SESSIONID"], ds_user_id: ENV["DS_USER_ID"])
-response = instapipe.stories(user_id: ENV["USER_TO_WATCH"])
-puts response
