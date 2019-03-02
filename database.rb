@@ -23,9 +23,12 @@ class Database
   end
 
   def self.file_storage_bucket
+    credentials = "./gc_keys.json"
+    credentials = JSON.parse(ENV["GC_KEYS"]) if ENV["GC_KEYS"]
+
     storage = Google::Cloud::Storage.new(
       project_id: ENV["GC_PROJECT_ID"],
-      credentials: ENV["GC_KEYS"] || "./gc_keys.json"
+      credentials: credentials
     )
 
     return storage.bucket(ENV["GC_BUCKET_NAME"])
