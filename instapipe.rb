@@ -79,10 +79,19 @@ module Instapipe
             )
           end
 
+          extension = item["is_video"] ? ".mp4" : ".jpg"
+          output_path = File.join(user_id, "#{item['id']}#{extension}")
+          puts "uploading file to Google Cloud #{output_path}"
+          created_file = Database.file_storage.create_file(file_path, output_path)
+
+          signed_url = created_file.signed_url(method: "GET", expires: 24 * 60 * 60) # expires in 24h
+
           # only after successfully posting it, store in db
           Database.database[:stories].insert({
             ig_id: item["id"],
-            url: item["url"],
+            user_id: user_id,
+            signed_url: signed_url,
+            bucket_path: output_path,
             height: item["height"],
             width: item["width"],
             timestamp: item["timestamp"],

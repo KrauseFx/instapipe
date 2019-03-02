@@ -1,5 +1,6 @@
 .DS_STORE
 .keys
+gc_keys.json
 
 *.gem
 *.rbc
