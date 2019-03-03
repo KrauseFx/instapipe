@@ -16,6 +16,7 @@ class Database
         Integer :width
         Integer :timestamp
         Boolean :is_video
+        String :story_location
       end
     end
 

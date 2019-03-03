@@ -49,6 +49,15 @@ module Instapipe
 
         version["is_video"] = is_video
         version["id"] = item["id"]
+        if Array(item["story_locations"]).count > 0
+          loc = item["story_locations"].first["location"]
+          version["location"] = {
+            name: loc["name"],
+            lat: loc["lat"],
+            lng: loc["lng"]
+          }
+        end
+
         version["timestamp"] = item["taken_at"] # TODO: investigate if that's the right one, alternative is `device_timestamp`
         if Database.database[:stories].where(ig_id: version["id"]).count > 0
           nil # we already have this in our db
@@ -95,7 +104,8 @@ module Instapipe
             height: item["height"],
             width: item["width"],
             timestamp: item["timestamp"],
-            is_video: item["is_video"]
+            is_video: item["is_video"],
+            location: item["location"].to_json
           })
         rescue => ex
           puts ex
