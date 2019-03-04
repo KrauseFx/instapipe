@@ -19,6 +19,7 @@ get '/stories.json' do
   end
 
   headers('Access-Control-Allow-Origin' => "*")
+  content_type('application/json')
 
   output.to_json
 end
