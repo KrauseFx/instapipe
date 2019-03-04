@@ -17,5 +17,8 @@ get '/stories.json' do
       location: JSON.parse(story[:location] || "{}")
     }
   end
+
+  headers('Access-Control-Allow-Origin' => "*")
+
   output.to_json
 end
