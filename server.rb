@@ -14,7 +14,7 @@ get '/stories.json' do
       height: story[:height],
       width: story[:width],
       relative_diff_in_h: relative_diff_in_h,
-      location: JSON.parse(story[:location])
+      location: JSON.parse(story[:location] || "{}")
     }
   end
   output.to_json
