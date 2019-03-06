@@ -120,9 +120,15 @@ function dismissStories() {
 }
 
 window.addEventListener("keyup", function(e) {
-  if (e.keyCode == 27) {
+  if (e.keyCode == 27) { // ESC
     dismissStories()
     return true;
+  }
+  if (e.keyCode == 37) { // Left
+    userDidClickPreviousStory();
+  }
+  if (e.keyCode == 39) { // Right
+    userDidClickNextStory();
   }
 }, false);
 
