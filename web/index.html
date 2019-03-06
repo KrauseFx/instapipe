@@ -1,0 +1,22 @@
+<script type="text/javascript" src="instapipe.js"></script>
+<link rel="stylesheet" type="text/css" href="instapipe.css">
+
+<img 
+  src="https://graph.facebook.com/100000723486971/picture?type=large"
+  id="storyProfilePicture"
+  onclick="showStories()" 
+  class="story-available"
+/>
+
+<div id="storyViewer">
+  <div id="storyContent">
+    <div id="storyProgressBar"></div>
+    <div id="storyBackButton" class="storyButton" onclick="userDidClickPreviousStory()">
+      <
+    </div>
+    <div id="storyNextButton" class="storyButton" onclick="userDidClickNextStory()">
+      >
+    </div>
+  </div>
+  <img src="" id="fakeContentToPreloadImages" />
+</div>
