@@ -9,7 +9,7 @@ var currentIndex = -1;
 
 function showStories() {
   var url = "https://instapipe.herokuapp.com/stories.json";
-  url = "http://127.0.0.1:4567/stories.json"
+  // url = "http://127.0.0.1:4567/stories.json"
 
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.onreadystatechange = function() { 
