@@ -22,9 +22,7 @@ function showStories() {
 
       for (let storyIndex in content) {
         let currentStory = content[storyIndex]
-        if (!currentStory["is_video"]) {
-          storiesToShow.push(currentStory)
-        }
+        storiesToShow.push(currentStory)
       }
 
       for (let currentStoryIndex in storiesToShow) {
@@ -66,31 +64,58 @@ function renderCurrentStory() {
     }
   }
 
-  // Show image
-  document.getElementById("storyContent").style.backgroundImage = "url('" + currentStory["signed_url"] + "')"
+  // Show image/video
+  let videoViewer = document.getElementById("storyVideoViewer")
+  let photoViewer = document.getElementById("storyPhotoViewer")
+  let progressBarContent = progressBars[currentIndex]
 
-  // animate progress bar
-  // via https://www.w3schools.com/js/js_htmldom_animate.asp
-  progressBarContent = progressBars[currentIndex]
-  progressBarContent.style.animationName = "storyViewProgress";
+  if (currentStory["is_video"]) {
+    videoViewer.src = currentStory["signed_url"]
+    videoViewer.style.display = "block"
+    videoViewer.onended = function() {
+      currentIndex++;
+      renderCurrentStory();
+    };
+    let videoUpdatedDuration = function() {
+      // this is triggered when the video file was loaded
+      // videos have dynamic length
+      animateProgressBar(progressBarContent, videoViewer.duration)
+      videoViewer.removeEventListener("durationchange", videoUpdatedDuration)
+    }
+    videoViewer.addEventListener("durationchange", videoUpdatedDuration)
+    videoViewer.load()
+    videoViewer.play()
+    photoViewer.style.display = "none"
+  } else {
+    photoViewer.style.backgroundImage = "url('" + currentStory["signed_url"] + "')"
+    videoViewer.style.display = "none"
+    photoViewer.style.display = "block"
+    animateProgressBar(progressBarContent, timeOutForPhotos) // photos are always x seconds
+
+    // Advance to next story after X seconds
+    nextStoryTimeout = setTimeout(function() {
+      if (currentIndex < storiesToShow.length - 1) {
+        currentIndex++;
+        renderCurrentStory();
+      } else {
+        dismissStories();
+      }
+    }, timeOutForPhotos * 1000)
+  }
 
   // Trigger the next one
-  if (currentIndex < storiesToShow.length - 1)
+  if (currentIndex < storiesToShow.length - 2 && !storiesToShow[currentIndex + 1]["is_video"])
   {
     setTimeout(function() {
       // Poor person's pre-loading of images, with a slight delay
       document.getElementById("fakeContentToPreloadImages").src = storiesToShow[currentIndex + 1]["signed_url"]
     }, timeOutForPhotos / 3.0 * 1000)
   }
+}
 
-  nextStoryTimeout = setTimeout(function() {
-    if (currentIndex < storiesToShow.length - 1) {
-      currentIndex++;
-      renderCurrentStory();
-    } else {
-      dismissStories();
-    }
-  }, timeOutForPhotos * 1000)
+function animateProgressBar(progressBar, duration) {
+  progressBar.style.animationName = "storyViewProgress";
+  progressBar.style.animationDuration = duration + "s";
 }
 
 function userDidClickPreviousStory() {
@@ -107,6 +132,8 @@ function userDidClickNextStory() {
 
 function stopAllAnimations() {
   clearTimeout(nextStoryTimeout)
+  document.getElementById("storyVideoViewer").onended = null
+
   for (let index in progressBars) {
     let currentProgressBar = progressBars[index]
     currentProgressBar.style.animationName = null
@@ -132,4 +159,4 @@ window.addEventListener("keyup", function(e) {
   }
 }, false);
 
-showStories()
+// showStories()
