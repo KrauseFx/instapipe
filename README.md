@@ -6,7 +6,9 @@ README will follow
 
 For now, see it in action: 
 
-[instapipe.herokuapp.com/stories.json](https://instapipe.herokuapp.com/stories.json)
+### [Demo](https://krausefx.github.io/instapipe/web/index.html)
+
+API Demo: [instapipe.herokuapp.com/stories.json](https://instapipe.herokuapp.com/stories.json)
 
 This will be used for [whereisfelix.today](https://whereisfelix.today), as well as to send stories to my friends who don't use Instagram every day (good for them), via Telegram.
 
