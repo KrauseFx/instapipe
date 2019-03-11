@@ -2,12 +2,8 @@
   width: 128px;
   height: 128px;
   border-radius: 70px;
-  position: absolute;
-  top: 140px;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
+  margin-top: -139px;
+  margin-left: 3px;
   cursor: pointer;
   border: 4px solid white;
 }
@@ -16,12 +12,6 @@
   background-image: linear-gradient(rgb(186, 62, 138), #fba051);
   height: 142px;
   width: 142px;
-  position: absolute;
-  top: 137px;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
   z-index: -10px;
   border-radius: 70px;
 }
