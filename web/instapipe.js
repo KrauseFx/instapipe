@@ -137,15 +137,23 @@ function animateProgressBar(progressBar, duration) {
 }
 
 function userDidClickPreviousStory() {
-  stopAllAnimations()
-  currentIndex--;
-  renderCurrentStory();
+  if (currentIndex > 0) {
+    stopAllAnimations()
+    currentIndex--;
+    renderCurrentStory();
+  } else {
+    dismissStories();
+  }
 }
 
 function userDidClickNextStory() {
-  stopAllAnimations()
-  currentIndex++;
-  renderCurrentStory();
+  if (currentIndex < storiesToShow.length - 1) {
+    stopAllAnimations()
+    currentIndex++;
+    renderCurrentStory();
+  } else {
+    dismissStories();
+  }
 }
 
 function stopAllAnimations() {
