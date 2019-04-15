@@ -20,6 +20,14 @@ class Database
       end
     end
 
+    unless @_db.table_exists?("views")
+      @_db.create_table :views do
+        primary_key :id
+        Date :date
+        Integer :count
+      end
+    end
+
     return @_db
   end
 

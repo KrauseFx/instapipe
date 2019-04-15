@@ -1,3 +1,5 @@
+let host = "https://instapipe.herokuapp.com/"
+
 var storiesToShow = null;
 var timeOutForPhotos = 4.0;
 var storyProgressSpacing = 5;
@@ -9,7 +11,7 @@ var nextStoryTimeout = null;
 var currentIndex = -1;
 
 function preloadStoriesIndex() {
-  var url = "https://instapipe.herokuapp.com/stories.json";
+  var url = host + "stories.json";
 
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.onreadystatechange = function() { 
@@ -68,6 +70,11 @@ function showStories() {
 
   currentIndex = 0
   renderCurrentStory()
+
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function() {}
+  xmlHttp.open("GET", host + "didOpenStories", true); // true = asynchronous 
+  xmlHttp.send(null);
 }
 
 function renderCurrentStory() {
