@@ -24,6 +24,7 @@ class Database
       @_db.create_table :views do
         primary_key :id
         Date :date
+        Integer :prefetches
         Integer :count
       end
     end

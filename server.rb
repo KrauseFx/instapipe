@@ -18,6 +18,22 @@ get '/stories.json' do
     }
   end
 
+  date = Date.today
+  existing_entry = Database.database[:views].where(date: date)
+  if existing_entry.count == 0
+    Database.database[:views].insert({
+      date: date,
+      count: 0,
+      prefetches: 0
+    })
+    existing_entry = Database.database[:views].where(date: date)
+  end
+
+  existing_entry.update(
+    count: existing_entry.first[:count],
+    prefetches: existing_entry.first[:prefetches] + 1
+  )
+
   headers('Access-Control-Allow-Origin' => "*")
   content_type('application/json')
 
@@ -26,16 +42,8 @@ end
 
 get "/didOpenStories" do
   date = Date.today
+
   existing_entry = Database.database[:views].where(date: date)
-
-  if existing_entry.count == 0
-    Database.database[:views].insert({
-      date: Date.today,
-      count: 0
-    })
-    existing_entry = Database.database[:views].where(date: date)
-  end
-
   existing_entry.update(count: existing_entry.first[:count] + 1)
 
   "Success"
