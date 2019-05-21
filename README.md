@@ -10,7 +10,7 @@ For now, see it in action:
 - [Integrated into krausefx.com](https://krausefx.com)
 - API Access: [instapipe.herokuapp.com/stories.json](https://instapipe.herokuapp.com/stories.json)
 
-This will be used for [whereisfelix.today](https://whereisfelix.today), as well as to send stories to my friends who don't use Instagram every day (good for them), via Telegram.
+This is used on [whereisfelix.today](https://whereisfelix.today) and [krausefx.com](https://krausefx.com), as well as to send stories to my friends who don't use Instagram every day (good for them), via Telegram.
 
 All messages are automatically being piped over a Telegram channel, stored on Google Cloud Storage, and the metadata in a Postgres database.
 
