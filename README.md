@@ -93,3 +93,8 @@ Integrating your pinned stories onto your website would be a cool feature, howev
 ### Provide RSS feed
 
 Publishing an RSS feed would be an easy way to integrate into various services, including IFTTT ([#6](https://github.com/KrauseFx/instapipe/issues/6)).
+
+<br />
+
+<p style="margin-bottom: 0px;">
+  <small>Website generated using <a href="https://markdown-to-github-style-web.com/" target="_blank">markdown-to-html-github-style.com</a></small></p>
