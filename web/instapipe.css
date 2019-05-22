@@ -112,3 +112,42 @@
   from { width: 0%; }
   to { width: 100%; }
 }
+
+/* Story header */
+#storyHeader {
+  height: 50px;
+  text-align: left;
+}
+
+#storyHeader > #storyHeaderProfilePicture {
+  height: 38px;
+  width: 38px;
+  border-radius: 19px;
+  cursor: pointer;
+  margin-top: 7px;
+  display: block-inline;
+}
+
+#storyHeader > #storyUserlink {
+  display: block-inline;
+  margin-left: 50px;
+  text-align: left;
+  margin-top: -40px; /* hacky */
+  padding-top: 0;
+  font-size: 20px;
+}
+
+#storyHeader > #storyUserlink > a {
+  color: white;
+  text-decoration: none;
+}
+
+#storyHeader > #storyTimestamp {
+  color: #777;
+  display: block-inline;
+  margin-left: 50px;
+  text-align: left;
+  margin-top: -28px;
+  padding-top: 0;
+  font-size: 16px;
+}
