@@ -98,8 +98,12 @@ function renderCurrentStory() {
     videoViewer.src = currentStory["signed_url"]
     videoViewer.style.display = "block"
     videoViewer.onended = function() {
-      currentIndex++;
-      renderCurrentStory();
+      if (currentIndex < storiesToShow.length - 1) {
+        currentIndex++;
+        renderCurrentStory();
+      } else {
+        dismissStories();
+      }
     };
     let videoUpdatedDuration = function() {
       // this is triggered when the video file was loaded
