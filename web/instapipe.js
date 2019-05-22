@@ -94,7 +94,6 @@ function renderCurrentStory() {
   let photoViewer = document.getElementById("storyPhotoViewer")
   let progressBarContent = progressBars[currentIndex]
 
-  // currentStory["timestamp"]
   document.getElementById("storyTimestamp").textContent = currentStory["formatted_time_diff"]
 
   if (currentStory["is_video"]) {
