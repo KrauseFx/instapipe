@@ -1,0 +1,244 @@
+
+    <html>
+      <head>
+        <title>instapipe.net</title>
+      </head>
+      <body>
+        <div id='content'>
+    <h1 id="instapipenet">instapipe.net</h1>
+<p><a href="https://twitter.com/KrauseFx"><img src="https://img.shields.io/badge/author-@KrauseFx-blue.svg?style=flat" alt="" /></a></p>
+<h2 id="background">Background</h2>
+<p>You want to share experiences as they are happening in your life. Instagram Stories is a great way to do so, thanks to cross-posting to Facebook, Messenger and Instagram itself, allowing most people to view your stories.</p>
+<p>However just like Snapchat, the platforms try to lock you in, with the content <strong>you</strong> create. Many of my family members and close friends don't use FB/IG daily, but still wanted to stay up to date on what I'm up to.</p>
+<p>Due to lack of an official API, and any kinds of integrations, the only way to access your stories is through the inofficial API the Instagram mobile- and web client use.</p>
+<h2 id="solution">Solution</h2>
+<p>A simple server that automatically downloads and publishes your stories on various platforms.</p>
+<h3 id="embed-into-websites">Embed into websites</h3>
+<p><a href="https://whereisfelix.today">
+  <img src="assets/whereisfelixScreenshot.jpg" />
+</a></p>
+<p>Showing what you're up to on the websites you operate is an easy way to make your online presence more personal.</p>
+<ul>
+<li><a href="https://whereisfelix.today">On whereisfelix.today</a></li>
+<li><a href="https://krausefx.com">Integrated into krausefx.com</a> (desktop only)</li>
+<li><a href="https://krausefx.github.io/instapipe/web/index.html">Plain live demo</a></li>
+</ul>
+<h3 id="provide-a-json-api">Provide a JSON API</h3>
+<p>Of course it also provides you with a JSON API, that can be used to integrate your Instagram stories into any app or service. The API includes all relevant data, including the raw image, location and the exact resolution of the media assets.</p>
+<p><img src="assets/apiScreenshot.jpg" /></p>
+<p><a href="https://instapipe.herokuapp.com/stories.json">instapipe.herokuapp.com/stories.json</a></p>
+<p>Make sure to manually copy &amp; paste this in a new tab to avoid the cross-site scripting protection</p>
+<h3 id="telegram-group">Telegram group</h3>
+<p>Many of my friends don't want to check Instagram every day, but still want to stay up to date with what I'm up to. Since they all use Telegram already, I set up a channel that automatically shows the stories I post.</p>
+<p><a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">
+  <img src="assets/telegramScreenshot.jpg" />
+</a></p>
+<p>A <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">Telegram group</a> containing all my latest stories. In particular nice to get an overview over all your most recent stories.</p>
+<h2 id="how-it-works">How it works</h2>
+<p>Instapipe is a simple server, that periodically fetches your most recent Instagram stories. As soon as a new story is available, it will</p>
+<ul>
+<li>Download the highest resolution photo/video and store it on your personal Google Cloud Bucket</li>
+<li>Store the associated metadata in a database you own, the data includes</li>
+<li>24 hours signed URL to the full-resolution photo/video of your Google Cloud Storage</li>
+<li>The full path of the resource referencing your Google Cloud bucket</li>
+<li>The user ID who published the asset</li>
+<li>The height and width of the photo/video</li>
+<li>The exact time stamp of publishing</li>
+<li>An <code>is_video</code> flag</li>
+<li>The location (if a location tag is attached)<ul>
+<li>Location Name (e.g. <code>Das Gym</code>)</li>
+<li><code>lat</code> and <code>lng</code> coordinates</li></ul></li>
+<li>Post the new story into a Telegram group (<a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">check it out here</a>)</li>
+</ul>
+<p>At the same time, some very basic metrics will be stored:</p>
+<ul>
+<li>Per day, how many people watched at least one story (not unique users, if a user watches at least one twice, it will be counted twice)</li>
+<li>Per day, how many times were the stories pre-fetched (meaning the instapipe code was loaded)</li>
+</ul>
+<p>The above metrics should only give you a rough idea on how many people have watched stories, no personal data is stored from the users, I don't want this to be the reason to add a cookie warning to a website.</p>
+<h2 id="potential">Potential</h2>
+<p>This is just the beginning, highly optimized for what I needed the bot for. There are so many other interesting things that could be built on top.</p>
+<h3 id="plug--play-integrations">Plug &amp; Play integrations</h3>
+<p>Right now Telegram and the API are hard-coded. However ideally you could write plugins or integrations to pipe the data over to any other platform. Maybe even an integration with <a href="https://ifttt.com">IFTTT</a> would make sense (<a href="https://github.com/KrauseFx/instapipe/issues/13">#13</a>).</p>
+<h3 id="multi-user-support">Multi-user support</h3>
+<p>Right now, this project only supports a single user at a time. It's designed in a way to support any number of users in the future. </p>
+<h3 id="rendering-of-a-mapglobe">Rendering of a map/globe</h3>
+<p>A map or a 3D globe, moving around, as the stories are rendered or maybe even a map view, with the stories on the map, onclick renders the story (<a href="https://github.com/KrauseFx/instapipe/issues/12">#12</a>).</p>
+<h3 id="embed-pinned-stories">Embed pinned stories</h3>
+<p>Integrating your pinned stories onto your website would be a cool feature, however I didn't need it for myself (<a href="https://github.com/KrauseFx/instapipe/issues/3">#3</a>).</p>
+<h3 id="provide-rss-feed">Provide RSS feed</h3>
+<p>Publishing an RSS feed would be an easy way to integrate into various services, including IFTTT (<a href="https://github.com/KrauseFx/instapipe/issues/6">#6</a>).</p>
+
+        </div>
+        <style type='text/css'>body {
+  font: 400 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #111;
+  background-color: #fdfdfd;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-feature-settings: "kern" 1;
+  -moz-font-feature-settings: "kern" 1;
+  -o-font-feature-settings: "kern" 1;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+  padding: 30px;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    padding: 5px;
+  }
+}
+
+body > #content {
+  margin: 0px;
+  max-width: 900px;
+  border: 1px solid #e1e4e8;
+  padding: 10px 40px;
+  padding-bottom: 20px;
+  border-radius: 2px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/**
+ * Links
+ */
+a {
+  color: #0366d6;
+  text-decoration: none; }
+  a:visited {
+    color: #0366d6; }
+  a:hover {
+    color: #0366d6;
+    text-decoration: underline; }
+
+pre {
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  font-size: 85%;
+  line-height: 1.45;
+  overflow: auto;
+  padding: 16px;
+}
+
+/**
+  * Code blocks
+  */
+
+code {
+  background-color: rgba(27,31,35,.05);
+  border-radius: 3px;
+  font-size: 85%;
+  margin: 0;
+  padding: .2em .4em;
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+}
+
+pre > code {
+  background-color: transparent;
+  border: 0;
+  display: inline;
+  line-height: inherit;
+  margin: 0;
+  overflow: visible;
+  padding: 0;
+  word-wrap: normal;
+  font-size: 100%;
+}
+
+
+/**
+ * Blockquotes
+ */
+blockquote {
+  margin-left: 30px;
+  margin-top: 0px;
+  margin-bottom: 16px;
+  border-left-width: 3px;
+  padding: 0 1em;
+  color: #828282;
+  border-left: 4px solid #e8e8e8;
+  padding-left: 15px;
+  font-size: 18px;
+  letter-spacing: -1px;
+  font-style: italic;
+}
+blockquote * {
+  font-style: normal !important;
+  letter-spacing: 0;
+  color: #6a737d !important;
+}
+
+/**
+ * Tables
+ */
+table {
+  border-spacing: 2px;
+  display: block;
+  font-size: 14px;
+  overflow: auto;
+  width: 100%;
+  margin-bottom: 16px;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+
+th {
+  font-weight: 600;
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+
+tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+/**
+ * Others
+ */
+
+img {
+  max-width: 100%;
+}
+
+p {
+  line-height: 24px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #24292e; }
+
+ul {
+  margin-top: 0; }
+
+li {
+  color: #24292e;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5; }
+
+li + li {
+  margin-top: 0.25em; }
+
+* {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  color: #24292e; }
+
+a:visited {
+  color: #0366d6; }
+
+h1, h2, h3 {
+  border-bottom: 1px solid #eaecef;
+  color: #111;
+  /* Darker */ }</style>
+      </body>
+    </html>
