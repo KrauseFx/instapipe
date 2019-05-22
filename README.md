@@ -20,11 +20,15 @@ A simple server that automatically downloads and publishes your stories on vario
   <img src="assets/whereisfelixScreenshot.jpg" />
 </a>
 
+Showing what you're up to on the websites you operate is an easy way to make your online presence more personal.
+
 - [On whereisfelix.today](https://whereisfelix.today)
 - [Integrated into krausefx.com](https://krausefx.com) (desktop only)
 - [Plain live demo](https://krausefx.github.io/instapipe/web/index.html)
 
 ### Provide a JSON API
+
+Of course it also provides you with a JSON API, that can be used to integrate your Instagram stories into any app or service. The API includes all relevant data, including the raw image, location and the exact resolution of the media assets.
 
 <img src="assets/apiScreenshot.jpg" />
 
@@ -33,6 +37,8 @@ A simple server that automatically downloads and publishes your stories on vario
 Make sure to manually copy & paste this in a new tab to avoid the cross-site scripting protection
 
 ### Telegram group
+
+Many of my friends don't want to check Instagram every day, but still want to stay up to date with what I'm up to. Since they all use Telegram already, I set up a channel that automatically shows the stories I post.
 
 <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">
   <img src="assets/telegramScreenshot.jpg" />
@@ -70,7 +76,7 @@ This is just the beginning, highly optimized for what I needed the bot for. Ther
 
 ### Plug & Play integrations
 
-Right now Telegram and the API are hard-coded. However ideally you could write plugins or integrations to pipe the data over to any other platform. Maybe even an integration with [ifttt](https://ifttt.com) would make sense ([#13](https://github.com/KrauseFx/instapipe/issues/13).
+Right now Telegram and the API are hard-coded. However ideally you could write plugins or integrations to pipe the data over to any other platform. Maybe even an integration with [IFTTT](https://ifttt.com) would make sense ([#13](https://github.com/KrauseFx/instapipe/issues/13)).
 
 ### Multi-user support
 
@@ -78,8 +84,12 @@ Right now, this project only supports a single user at a time. It's designed in 
 
 ### Rendering of a map/globe
 
-A map or a 3D globe, moving around, as the stories are rendered [#12](https://github.com/KrauseFx/instapipe/issues/12) or maybe even a map view, with the stories on the map, onclick renders the story.
+A map or a 3D globe, moving around, as the stories are rendered or maybe even a map view, with the stories on the map, onclick renders the story ([#12](https://github.com/KrauseFx/instapipe/issues/12)).
 
 ### Embed pinned stories
 
-Integrating your pinned stories onto your website would be a cool feature, however I didn't need it for myself [#3](https://github.com/KrauseFx/instapipe/issues/3)
+Integrating your pinned stories onto your website would be a cool feature, however I didn't need it for myself ([#3](https://github.com/KrauseFx/instapipe/issues/3)).
+
+### Provide RSS feed
+
+Publishing an RSS feed would be an easy way to integrate into various services, including IFTTT ([#6](https://github.com/KrauseFx/instapipe/issues/6)).
