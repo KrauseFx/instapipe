@@ -1,11 +1,32 @@
 require 'sinatra'
 require_relative "./database"
 
+def time_diff(seconds_diff)
+  seconds_diff = seconds_diff.to_i
+
+  hours = seconds_diff / 3600
+  seconds_diff -= hours * 3600
+
+  minutes = seconds_diff / 60
+  seconds_diff -= minutes * 60
+
+  if hours > 0
+    return "#{hours}h"
+  elsif minutes > 20
+    return "#{minutes}m"
+  else
+    return "Just now"
+  end
+end
+
 get '/stories.json' do
   output = []
   Database.database[:stories].each do |story|
-    relative_diff_in_h = (Time.now - Time.at(story[:timestamp]))/60/60
+    relative_diff_in_seconds = (Time.now - Time.at(story[:timestamp]))
+    relative_diff_in_h = relative_diff_in_seconds / 60 / 60
     next if relative_diff_in_h > 24 # only show the most recent stories
+
+    formatted_time_diff = time_diff(relative_diff_in_seconds)
 
     output << {
       signed_url: story[:signed_url],
@@ -14,6 +35,7 @@ get '/stories.json' do
       height: story[:height],
       width: story[:width],
       relative_diff_in_h: relative_diff_in_h,
+      formatted_time_diff: formatted_time_diff,
       location: JSON.parse(story[:location] || "{}")
     }
   end
