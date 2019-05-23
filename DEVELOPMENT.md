@@ -36,3 +36,11 @@ export GC_KEYS=""
 ```
 
 `GC_KEYS` can either be an environment variable, or you can pass the Google Cloud credentials by having a `gc_keys.json` file in the root directory of the project
+
+## Generating the widget
+
+```
+bundle exec ruby generate_widget.rb
+```
+
+This will generate `instapipe.html`, a single file containing all the "dependencies" needed
