@@ -63,6 +63,8 @@ Instapipe is a simple server, that periodically fetches your most recent Instagr
     - `lat` and `lng` coordinates
 - Post the new story into a Telegram group ([check it out here](https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A))
 
+<img src="assets/databaseScreenshot.jpg" />
+
 At the same time, some very basic metrics will be stored:
 
 - Per day, how many people watched at least one story (not unique users, if a user watches at least one twice, it will be counted twice)
