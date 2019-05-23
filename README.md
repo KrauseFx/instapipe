@@ -1,6 +1,450 @@
-# instapipe.net
+<h1 style="text-align: center;">instapipe.net</h1>
 
-[![](https://img.shields.io/badge/author-@KrauseFx-blue.svg?style=flat)](https://twitter.com/KrauseFx)
+
+<div id="story-available">
+  <img 
+    src="https://graph.facebook.com/100000723486971/picture?type=large"
+    id="storyProfilePicture"
+    onclick="showStories()"
+  />
+</div>
+
+<div id="storyViewer">
+  <div id="storyContent">
+    <div id="storyHeader">
+      <img 
+        id="storyHeaderProfilePicture"
+        onclick="window.open('https://instagram.com/krausefx', '_blank')"
+      />
+      <p id="storyUserlink"><a href="https://instagram.com/krausefx" target="_blank">KrauseFx</a></p>
+      <p id="storyTimestamp"></p>
+      <p id="poweredByInstapipe"><a href="https://instapipe.net" target="_blank">instapipe.net</a></p>
+    </div>
+    <div id="storyProgressBar"></div>
+    <div id="storyBackButton" class="storyButton" onclick="userDidClickPreviousStory()">
+      <
+    </div>
+    <div id="storyNextButton" class="storyButton" onclick="userDidClickNextStory()">
+      >
+    </div>
+
+    <video autoplay playsinline muted id="storyVideoViewer">
+    </video>
+    <div id="storyPhotoViewer" onclick="userDidClickNextStory()">
+    </div>
+  </div>
+  <img src="" id="fakeContentToPreloadImages" />
+</div>
+
+<script type='text/javascript'>
+let host = "https://instapipe.herokuapp.com/"
+let userId = "4409072"
+
+var storiesToShow = null;
+var timeOutForPhotos = 4.0;
+var storyProgressSpacing = 5;
+var progressPadding = 2;
+var progressBars = null;
+var storiesContent = null;
+
+var nextStoryTimeout = null;
+var currentIndex = -1;
+
+function preloadStoriesIndex() {
+  var url = host + "stories.json?user_id=" + userId;
+
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function() { 
+    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+      storiesContent = JSON.parse(xmlHttp.responseText)
+      if (storiesContent.length == 0) {
+        // Default it's shown, as it looks nicer
+        // and I post stories most days :joy:
+        document.getElementById("story-available").className += "story-not-available"
+      } else {
+        // preload the first story if it's a picture
+        if (!storiesContent[0]["is_video"]) {
+          document.getElementById("fakeContentToPreloadImages").src = storiesContent[0]["signed_url"]
+        }
+      }
+    }
+  };
+
+  xmlHttp.open("GET", url, true); // true = asynchronous 
+  xmlHttp.send(null);
+}
+
+function showStories() {
+  if (storiesContent == null || storiesContent.length == 0) {
+    return;
+  }
+
+  // Copy the profile picture URL to the story header, to only have to define it once
+  // we only do that once everything is loaded, as depending on the website
+  // the image node might not be acccessible yet
+  let profileImageURL = document.getElementById("storyProfilePicture").src
+  document.getElementById("storyHeaderProfilePicture").src = profileImageURL;
+
+  storiesToShow = []
+  progressBars = []
+
+  document.getElementById("storyViewer").style.display = "block"
+
+  for (let storyIndex in storiesContent) {
+    let currentStory = storiesContent[storyIndex]
+    storiesToShow.push(currentStory)
+  }
+
+  for (let currentStoryIndex in storiesToShow) {
+    let currentStory = storiesToShow[currentStoryIndex]
+
+    // Append the progress items
+    var progressBarBackground = document.createElement("div")
+    progressBarBackground.className = "storyProgressBarItemBg"
+    progressBarBackground.style.width = "calc(" + (1.0 / storiesToShow.length) * 100 + "%" + " - " + progressPadding * 2 + "px)"
+    progressBarBackground.style.marginRight = progressPadding + "px"
+    progressBarBackground.style.marginLeft = progressPadding + "px"
+    document.getElementById("storyProgressBar").appendChild(progressBarBackground)
+
+    var progressBarForeground = document.createElement("div")
+    progressBarForeground.style.width = "0%"
+    progressBarForeground.className = "storyProgressBarItemFg"
+    progressBarBackground.appendChild(progressBarForeground)
+
+    progressBars.push(progressBarForeground)
+  }
+
+  currentIndex = 0
+  renderCurrentStory()
+
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function() {}
+  xmlHttp.open("GET", host + "didOpenStories", true); // true = asynchronous 
+  xmlHttp.send(null);
+}
+
+function renderCurrentStory() {
+  currentStory = storiesToShow[currentIndex]
+  
+  for (let index in progressBars) {
+    let currentProgressBar = progressBars[index]
+    if (currentIndex > index) {
+      currentProgressBar.style.width = "100%"
+    } else {
+      currentProgressBar.style.width = "0%"
+    }
+  }
+
+  // Show image/video
+  let videoViewer = document.getElementById("storyVideoViewer")
+  let photoViewer = document.getElementById("storyPhotoViewer")
+  let progressBarContent = progressBars[currentIndex]
+
+  document.getElementById("storyTimestamp").textContent = currentStory["formatted_time_diff"]
+
+  if (currentStory["is_video"]) {
+    videoViewer.src = currentStory["signed_url"]
+    videoViewer.style.display = "block"
+    videoViewer.onended = function() {
+      if (currentIndex < storiesToShow.length - 1) {
+        currentIndex++;
+        renderCurrentStory();
+      } else {
+        dismissStories();
+      }
+    };
+    let videoUpdatedDuration = function() {
+      // this is triggered when the video file was loaded
+      // videos have dynamic length
+      animateProgressBar(progressBarContent, videoViewer.duration)
+      videoViewer.removeEventListener("durationchange", videoUpdatedDuration)
+    }
+    videoViewer.addEventListener("durationchange", videoUpdatedDuration)
+    videoViewer.load()
+    videoViewer.play()
+    photoViewer.style.display = "none"
+  } else {
+    photoViewer.style.backgroundImage = "url('" + currentStory["signed_url"] + "')"
+    videoViewer.style.display = "none"
+    photoViewer.style.display = "block"
+    animateProgressBar(progressBarContent, timeOutForPhotos) // photos are always x seconds
+
+    // Advance to next story after X seconds
+    nextStoryTimeout = setTimeout(function() {
+      if (currentIndex < storiesToShow.length - 1) {
+        currentIndex++;
+        renderCurrentStory();
+      } else {
+        dismissStories();
+      }
+    }, timeOutForPhotos * 1000)
+  }
+
+  // Trigger the next one
+  if (currentIndex < storiesToShow.length - 1 && !storiesToShow[currentIndex + 1]["is_video"])
+  {
+    setTimeout(function() {
+      // Poor person's pre-loading of images, with a slight delay
+      document.getElementById("fakeContentToPreloadImages").src = storiesToShow[currentIndex + 1]["signed_url"]
+    }, timeOutForPhotos / 3.0 * 1000)
+  }
+}
+
+function animateProgressBar(progressBar, duration) {
+  progressBar.style.animationName = "storyViewProgress";
+  progressBar.style.animationDuration = duration + "s";
+}
+
+function userDidClickPreviousStory() {
+  if (currentIndex > 0) {
+    stopAllAnimations()
+    currentIndex--;
+    renderCurrentStory();
+  } else {
+    dismissStories();
+  }
+}
+
+function userDidClickNextStory() {
+  if (currentIndex < storiesToShow.length - 1) {
+    stopAllAnimations()
+    currentIndex++;
+    renderCurrentStory();
+  } else {
+    dismissStories();
+  }
+}
+
+function stopAllAnimations() {
+  clearTimeout(nextStoryTimeout)
+  document.getElementById("storyVideoViewer").onended = null
+
+  for (let index in progressBars) {
+    let currentProgressBar = progressBars[index]
+    currentProgressBar.style.animationName = null
+  }
+}
+
+function dismissStories() {
+  document.getElementById("storyViewer").style.display = "none"
+  document.getElementById("storyProgressBar").innerHTML = ""
+  stopAllAnimations()
+}
+
+window.addEventListener("keyup", function(e) {
+  if (e.keyCode == 27) { // ESC
+    dismissStories()
+    return true;
+  }
+  if (e.keyCode == 37) { // Left
+    userDidClickPreviousStory();
+  }
+  if (e.keyCode == 39) { // Right
+    userDidClickNextStory();
+  }
+}, false);
+
+preloadStoriesIndex();
+
+</script>
+<style type='text/css'>
+#storyProfilePicture {
+  width: 128px;
+  height: 128px;
+  border-radius: 70px;
+  margin-left: 3px;
+  margin-top: 3px;
+  cursor: pointer;
+  border: 4px solid white;
+}
+
+#story-available {
+  background-image: linear-gradient(rgb(186, 62, 138), #fba051);
+  height: 142px;
+  width: 142px;
+  z-index: -10;
+  border-radius: 70px;
+  margin-bottom: 15px;
+}
+
+#story-available.story-not-available {
+  background-image: none !important;
+}
+
+#storyViewer {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.8);
+  text-align: center;
+  display: none;
+
+  font-family: 'Helvetica Neue', sans-serif;
+  font-weight: normal;
+}
+
+#storyViewer p {
+  color: #686868;
+  font-size: 20px;
+  line-height: 24px;
+  margin: 0 0 24px;
+  text-align: center;
+  text-justify: inter-word;
+}
+
+#storyViewer > #storyContent {
+  width: 512px;
+  max-width: 80%; /* for mobile devices */
+  margin-top: 30px;
+  display: inline-block;
+
+  /* 
+    To get the right aspect ratio, while still having a dynamic content size
+    https://stackoverflow.com/questions/1495407/maintain-the-aspect-ratio-of-a-div-with-css
+    IG content: 910px height to 512px width = ~178%
+    So the `padding-bottom` sets the height of the content
+  */
+  padding-bottom: 178%;
+}
+
+#storyViewer > #storyContent > .storyButton {
+  position: fixed;
+  top: calc(910px - 450px);
+  background-color: rgba(200, 200, 200, 0.88);
+  padding: 10px;
+  color: rgba(0, 0, 0, 0.8);
+  font-weight: bolder;
+  font-size: 16px;
+  border-radius: 18px;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+#storyViewer > #storyContent > #storyBackButton {
+  left: 50px;
+}
+
+#storyViewer > #storyContent > #storyNextButton {
+  right: 53px; /* no idea where the difference comes from */
+}
+
+#storyViewer > #storyContent > #storyPhotoViewer {
+  width: 100%;
+  padding-bottom: 178%; /* see comment in #storyContent */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
+
+#storyViewer > #storyContent > #storyVideoViewer {
+  padding-bottom: 178%; /* see comment in #storyContent */
+  width: 100%;
+}
+
+#storyViewer > #storyContent > #storyProgressBar {
+  width: calc(100% + 4px);
+  margin-left: -2px;
+  height: 3px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#storyViewer > #storyContent > #storyProgressBar > .storyProgressBarItemBg {
+  border-radius: 6px;
+  background-color: rgba(187, 187, 187, 0.6);
+  height: 100%;
+  display: inline-block;
+  float: left;
+}
+
+.storyProgressBarItemFg {
+  background-color: #FFF;
+  height: 100%;
+  border-radius: 3px;
+  animation-timing-function: linear;
+}
+
+#fakeContentToPreloadImages {
+  height: 0;
+  width: 0;
+  opacity: 0;
+}
+
+@keyframes storyViewProgress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+/* Story header */
+#storyHeader {
+  height: 50px;
+  text-align: left;
+}
+
+#storyHeader > #storyHeaderProfilePicture {
+  height: 38px;
+  width: 38px;
+  border-radius: 19px;
+  cursor: pointer;
+  margin-top: 7px;
+  display: block-inline;
+}
+
+#storyHeader > #storyUserlink {
+  display: block-inline;
+  margin-left: 50px;
+  text-align: left;
+  margin-top: -40px; /* hacky */
+  padding-top: 0;
+  font-size: 20px;
+}
+
+#storyHeader > #storyUserlink > a {
+  color: white !important;
+  text-decoration: none;
+}
+
+#storyHeader > #storyTimestamp {
+  color: #777;
+  display: block-inline;
+  margin-left: 50px;
+  text-align: left;
+  margin-top: -28px;
+  padding-top: 0;
+  font-size: 16px;
+}
+
+#storyHeader > #poweredByInstapipe {
+  display: block-inline;
+  margin-left: 150px;
+  text-align: right;
+  margin-top: -50px; /* hacky */
+  padding-top: 0;
+  font-size: 16px;
+}
+
+#storyHeader > #poweredByInstapipe > a {
+  color: #999 !important;
+  text-decoration: none;
+}
+
+</style>
+
+<p style="text-align: center;"><b>⬆️ Give it a try, click on the picture ⬆️</b></p>
+
+<style type="text/css">
+  #story-available {
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+
+<br />
 
 ## Background
 
@@ -11,6 +455,8 @@ However just like Snapchat, the platforms try to lock you in, with the content *
 Due to lack of an official API, and any kinds of integrations, the only way to access your stories is through the inofficial API the Instagram mobile- and web client use.
 
 ## Solution
+
+[![](https://img.shields.io/badge/author-@KrauseFx-blue.svg?style=flat)](https://twitter.com/KrauseFx)
 
 A simple server that automatically downloads and publishes your stories on various platforms.
 
@@ -25,6 +471,7 @@ Showing what you're up to on the websites you operate is an easy way to make you
 - [On whereisfelix.today](https://whereisfelix.today)
 - [Integrated into krausefx.com](https://krausefx.com) (desktop only)
 - [Plain live demo](https://krausefx.github.io/instapipe/web/index.html)
+- [Top of this page]("#")
 
 ### Provide a JSON API
 
