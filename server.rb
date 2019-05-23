@@ -21,7 +21,8 @@ end
 
 get '/stories.json' do
   output = []
-  Database.database[:stories].each do |story|
+  user_id = params[:user_id]
+  Database.database[:stories].where(user_id: user_id).each do |story|
     relative_diff_in_seconds = (Time.now - Time.at(story[:timestamp]))
     relative_diff_in_h = relative_diff_in_seconds / 60 / 60
     next if relative_diff_in_h > 24 # only show the most recent stories
@@ -36,7 +37,8 @@ get '/stories.json' do
       width: story[:width],
       relative_diff_in_h: relative_diff_in_h,
       formatted_time_diff: formatted_time_diff,
-      location: JSON.parse(story[:location] || "{}")
+      location: JSON.parse(story[:location] || "{}"),
+      user_id: user_id
     }
   end
 
