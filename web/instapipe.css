@@ -26,6 +26,17 @@
   background-color: rgba(0, 0, 0, 0.8);
   text-align: center;
   display: none;
+
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+#storyViewer p {
+  color: #686868;
+  font-size: 20px;
+  line-height: 24px;
+  margin: 0 0 24px;
+  text-align: center;
+  text-justify: inter-word;
 }
 
 #storyViewer > #storyContent {
@@ -138,7 +149,7 @@
 }
 
 #storyHeader > #storyUserlink > a {
-  color: white;
+  color: white !important;
   text-decoration: none;
 }
 
@@ -162,6 +173,6 @@
 }
 
 #storyHeader > #poweredByInstapipe > a {
-  color: #999;
+  color: #999 !important;
   text-decoration: none;
 }
