@@ -470,7 +470,7 @@ Due to lack of an official API, and any kinds of integrations, the only way to a
 
 [![](https://img.shields.io/badge/author-@KrauseFx-blue.svg?style=flat)](https://twitter.com/KrauseFx)
 
-A simple server that automatically downloads and publishes your stories on various platforms.
+A simple web service that automatically downloads and publishes your stories on various platforms. It's open source and fully self hosted, check it out [on GitHub](https://github.com/KrauseFx/instapipe).
 
 ### Embed into websites
 
