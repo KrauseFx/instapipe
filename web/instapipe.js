@@ -28,10 +28,6 @@ function preloadStoriesIndex() {
           document.getElementById("fakeContentToPreloadImages").src = storiesContent[0]["signed_url"]
         }
       }
-
-      // Copy the profile picture URL to the story header, to only have to define it once
-      let profileImageURL = document.getElementById("storyProfilePicture").src
-      document.getElementById("storyHeaderProfilePicture").src = profileImageURL;
     }
   };
 
@@ -43,6 +39,12 @@ function showStories() {
   if (storiesContent == null || storiesContent.length == 0) {
     return;
   }
+
+  // Copy the profile picture URL to the story header, to only have to define it once
+  // we only do that once everything is loaded, as depending on the website
+  // the image node might not be acccessible yet
+  let profileImageURL = document.getElementById("storyProfilePicture").src
+  document.getElementById("storyHeaderProfilePicture").src = profileImageURL;
 
   storiesToShow = []
   progressBars = []

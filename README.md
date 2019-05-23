@@ -82,7 +82,7 @@ Right now Telegram and the API are hard-coded. However ideally you could write p
 
 ### Multi-user support
 
-Right now, this project only supports a single user at a time. It's designed in a way to support any number of users in the future. 
+Right now, this project only supports a single user at a time. It's designed in a way to support any number of users in the future ([#22](https://github.com/KrauseFx/instapipe/issues/new)).
 
 ### Rendering of a map/globe
 

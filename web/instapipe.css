@@ -28,6 +28,7 @@
   display: none;
 
   font-family: 'Helvetica Neue', sans-serif;
+  font-weight: normal;
 }
 
 #storyViewer p {
