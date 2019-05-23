@@ -485,6 +485,17 @@ Showing what you're up to on the websites you operate is an easy way to make you
 - [Plain live demo](https://krausefx.github.io/instapipe/web/index.html)
 - [Top of this page]("#")
 
+**Features**
+
+- Design similar to instagram.com web
+- Arrow keys to go back and forth between stories
+- Support for photos and videos
+- Support for desktop and mobile browsers
+- Dismiss stories using ESC key, and clicking the dimmed area
+- Pre-loading of the next story for instant rendering
+- Basic features like rendering of the progress bar, the relative time stamp, as well as linking to your profile
+- Zero dependencies, plain JavaScript, CSS and HTML in a single file
+
 ### Provide a JSON API
 
 Of course it also provides you with a JSON API, that can be used to integrate your Instagram stories into any app or service. The API includes all relevant data, including the raw image, location and the exact resolution of the media assets.
