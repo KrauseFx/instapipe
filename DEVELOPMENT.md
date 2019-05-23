@@ -32,4 +32,7 @@ export DATABASE_URL="postgresql://felixkrause@localhost/instapipe"
 
 export GC_PROJECT_ID=""
 export GC_BUCKET_NAME=""
+export GC_KEYS=""
 ```
+
+`GC_KEYS` can either be an environment variable, or you can pass the Google Cloud credentials by having a `gc_keys.json` file in the root directory of the project
