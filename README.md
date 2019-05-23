@@ -491,7 +491,7 @@ Of course it also provides you with a JSON API, that can be used to integrate yo
 
 <img src="assets/apiScreenshot.jpg" />
 
-[instapipe.herokuapp.com/stories.json](https://instapipe.herokuapp.com/stories.json)
+[https://instapipe.herokuapp.com/stories.json?user_id=4409072](https://instapipe.herokuapp.com/stories.json?user_id=4409072)
 
 Make sure to manually copy & paste this in a new tab to avoid the cross-site scripting protection
 
@@ -503,7 +503,7 @@ Many of my friends don't want to check Instagram every day, but still want to st
   <img src="assets/telegramScreenshot.jpg" />
 </a>
 
-A [Telegram group](https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A) containing all my latest stories. In particular nice to get an overview over all your most recent stories.
+A [Telegram group](https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A) containing all my latest stories. In particular nice to get an overview over all your most recent stories. Join it [here](https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A).
 
 ## How it works
 
