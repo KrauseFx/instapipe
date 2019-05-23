@@ -1,4 +1,5 @@
 let host = "https://instapipe.herokuapp.com/"
+let userId = "4409072"
 
 var storiesToShow = null;
 var timeOutForPhotos = 4.0;
@@ -11,7 +12,7 @@ var nextStoryTimeout = null;
 var currentIndex = -1;
 
 function preloadStoriesIndex() {
-  var url = host + "stories.json";
+  var url = host + "stories.json?user_id=" + userId;
 
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.onreadystatechange = function() { 
@@ -27,6 +28,10 @@ function preloadStoriesIndex() {
           document.getElementById("fakeContentToPreloadImages").src = storiesContent[0]["signed_url"]
         }
       }
+
+      // Copy the profile picture URL to the story header, to only have to define it once
+      let profileImageURL = document.getElementById("storyProfilePicture").src
+      document.getElementById("storyHeaderProfilePicture").src = profileImageURL;
     }
   };
 
