@@ -151,3 +151,17 @@
   padding-top: 0;
   font-size: 16px;
 }
+
+#storyHeader > #poweredByInstapipe {
+  display: block-inline;
+  margin-left: 150px;
+  text-align: right;
+  margin-top: -50px; /* hacky */
+  padding-top: 0;
+  font-size: 16px;
+}
+
+#storyHeader > #poweredByInstapipe > a {
+  color: #999;
+  text-decoration: none;
+}
