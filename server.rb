@@ -67,6 +67,8 @@ end
 get "/didOpenStories" do
   date = Date.today
 
+  headers('Access-Control-Allow-Origin' => "*")
+
   existing_entry = Database.database[:views].where(date: date)
   existing_entry.update(count: existing_entry.first[:count] + 1)
 
