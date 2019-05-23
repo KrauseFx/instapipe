@@ -531,6 +531,12 @@ At the same time, some very basic metrics will be stored:
 
 The above metrics should only give you a rough idea on how many people have watched stories, no personal data is stored from the users, I don't want this to be the reason to add a cookie warning to a website.
 
+## Can I use it?
+
+For now, you'll have to be an engineer to be able to use it, as instapipe.net is completely self-hosted. Check out the [GitHub repo](https://github.com/krausefx/instapipe) to access instructions and the source code, in particular [`DEVELOPMENT.md`](https://github.com/KrauseFx/instapipe/blob/master/DEVELOPMENT.md).
+
+If you're not an engineer, and are interested in using this on your website, via a Telegram channel or another platform, please drop me a message on [Twitter@KrauseFx](https://twitter.com/KrauseFx) or [Instagram@KrauseFx](https://instagram.com/KrauseFx), so I can see if demand is there to put in the extra work to provide instapipe as a service.
+
 ## Potential
 
 This is just the beginning, highly optimized for what I needed the bot for. There are so many other interesting things that could be built on top.
