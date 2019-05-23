@@ -1,6 +1,7 @@
 <h1 style="text-align: center;">instapipe.net</h1>
 
 
+
 <div id="story-available">
   <img 
     src="https://graph.facebook.com/100000723486971/picture?type=large"
@@ -10,6 +11,7 @@
 </div>
 
 <div id="storyViewer">
+  <div id="storyViewerDimmedBackground" onclick="dismissStories()"></div>
   <div id="storyContent">
     <div id="storyHeader">
       <img 
@@ -278,12 +280,19 @@ preloadStoriesIndex();
   top: 0;
   left: 0;
   z-index: 100;
-  background-color: rgba(0, 0, 0, 0.8);
   text-align: center;
   display: none;
 
   font-family: 'Helvetica Neue', sans-serif;
   font-weight: normal;
+}
+#storyViewer > #storyViewerDimmedBackground {
+  /* This is a separate div to allow onclick events */
+  background-color: rgba(0, 0, 0, 0.8);
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  position: absolute;
 }
 
 #storyViewer p {
@@ -434,6 +443,9 @@ preloadStoriesIndex();
 }
 
 </style>
+
+
+
 
 <p style="text-align: center;"><b>⬆️ Give it a try, click on the picture ⬆️</b></p>
 
