@@ -19,6 +19,7 @@ module Instapipe
     end
 
     def stories(user_id:)
+      chat_id = ENV["TELEGRAM_CHAT_ID"]
       uri = URI("https://i.instagram.com/api/v1/feed/user/#{user_id}/reel_media/")
 
       # Create client
@@ -33,6 +34,17 @@ module Instapipe
 
       # Fetch Request
       res = http.request(req)
+      puts res.to_hash["location"]
+      if res.code.to_i == 302 && (res.to_hash["location"].first || "").include?("unblock")
+        # API key expired
+        puts "Instagram API key expired, please refresh the `sessionid` and the `ds_user_id`"
+        self.telegram_client.api.send_message(
+          chat_id: chat_id,
+          text: "Instagram API key expired (3 months old), please refresh the `sessionid` and `ds_user_id`"
+        )
+
+        raise "error #{res}"
+      end
       raise "Error #{res}" unless res.code.to_i == 200
       response = JSON.parse(res.body)
 
@@ -67,7 +79,6 @@ module Instapipe
       end.compact
 
       puts "Storing #{items.count} in database and send it via Telegram"
-      chat_id = ENV["TELEGRAM_CHAT_ID"]
       items.each do |item|
         puts "Uploading #{item}"
         file_path = File.join("/tmp/", item["id"])
