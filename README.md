@@ -464,7 +464,7 @@ You want to share experiences as they are happening in your life. Instagram Stor
 
 However just like Snapchat, the platforms try to lock you in, with the content **you** create. Many of my family members and close friends don't use FB/IG daily, but still wanted to stay up to date on what I'm up to.
 
-Due to lack of an official API, and any kinds of integrations, the only way to access your stories is through the inofficial API the Instagram mobile- and web client use.
+Due to lack of an official API, and any kinds of integrations, the only way to access your stories is through the unofficial API the Instagram mobile- and web client use.
 
 ## Solution
 
