@@ -4,7 +4,7 @@
 
 <div id="story-available">
   <img 
-    src="https://graph.facebook.com/100000723486971/picture?type=large"
+    src="https://krausefx.com/assets/FelixKrauseCropped.jpg"
     id="storyProfilePicture"
     onclick="showStories()"
   />
