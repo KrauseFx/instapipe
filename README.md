@@ -2,7 +2,7 @@
 
 
 
-<div id="story-available">
+<div id="story-available" class="story-not-available">
   <img 
     src="https://krausefx.com/assets/FelixKrauseCropped.jpg"
     id="storyProfilePicture"
@@ -24,10 +24,10 @@
     </div>
     <div id="storyProgressBar"></div>
     <div id="storyBackButton" class="storyButton" onclick="userDidClickPreviousStory()">
-      <
+      &#x3C;
     </div>
     <div id="storyNextButton" class="storyButton" onclick="userDidClickNextStory()">
-      >
+      &#x3E; 
     </div>
 
     <video autoplay playsinline muted id="storyVideoViewer">
@@ -59,11 +59,9 @@ function preloadStoriesIndex() {
   xmlHttp.onreadystatechange = function() { 
     if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
       storiesContent = JSON.parse(xmlHttp.responseText)
-      if (storiesContent.length == 0) {
-        // Default it's shown, as it looks nicer
-        // and I post stories most days :joy:
-        document.getElementById("story-available").className += "story-not-available"
-      } else {
+      if (storiesContent.length > 0) {
+        document.getElementById("story-available").classList.remove("story-not-available");
+
         // preload the first story if it's a picture
         if (!storiesContent[0]["is_video"]) {
           document.getElementById("fakeContentToPreloadImages").src = storiesContent[0]["signed_url"]

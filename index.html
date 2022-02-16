@@ -1,726 +1,747 @@
+<html>
 
-    <html>
-      <head>
-        <title>instapipe.net</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-      </head>
-      <body>
-        <div id='content'>
-    <h1 style="text-align: center;">instapipe.net</h1>
-<div id="story-available">
-  <img 
-    src="https://krausefx.com/assets/FelixKrauseCropped.jpg"
-    id="storyProfilePicture"
-    onclick="showStories()"
-  />
-</div>
-<div id="storyViewer">
-  <div id="storyViewerDimmedBackground" onclick="dismissStories()"></div>
-  <div id="storyContent">
-    <div id="storyHeader">
-      <img 
-        id="storyHeaderProfilePicture"
-        onclick="window.open('https://instagram.com/krausefx', '_blank')"
-      />
-      <p id="storyUserlink"><a href="https://instagram.com/krausefx" target="_blank">KrauseFx</a></p>
-      <p id="storyTimestamp"></p>
-      <p id="poweredByInstapipe"><a href="https://instapipe.net" target="_blank">instapipe.net</a></p>
-    </div>
-    <div id="storyProgressBar"></div>
-    <div id="storyBackButton" class="storyButton" onclick="userDidClickPreviousStory()">
-      <
-    </div>
-    <div id="storyNextButton" class="storyButton" onclick="userDidClickNextStory()">
-      >
-    </div>
+<head>
+    <title>instapipe.net</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
 
-    <video autoplay playsinline muted id="storyVideoViewer">
+<body>
+    <div id='content'>
+        <h1 style="text-align: center;">instapipe.net</h1>
+        <div id="story-available" class="story-not-available">
+            <img src="https://krausefx.com/assets/FelixKrauseCropped.jpg" id="storyProfilePicture" onclick="showStories()" />
+        </div>
+        <div id="storyViewer">
+            <div id="storyViewerDimmedBackground" onclick="dismissStories()"></div>
+            <div id="storyContent">
+                <div id="storyHeader">
+                    <img id="storyHeaderProfilePicture" onclick="window.open('https://instagram.com/krausefx', '_blank')" />
+                    <p id="storyUserlink"><a href="https://instagram.com/krausefx" target="_blank">KrauseFx</a></p>
+                    <p id="storyTimestamp"></p>
+                    <p id="poweredByInstapipe"><a href="https://instapipe.net" target="_blank">instapipe.net</a></p>
+                </div>
+                <div id="storyProgressBar"></div>
+                <div id="storyBackButton" class="storyButton" onclick="userDidClickPreviousStory()">
+                    &#x3C; </div>
+                <div id="storyNextButton" class="storyButton" onclick="userDidClickNextStory()">
+                    &#x3E;
+                </div>
+
+                <video autoplay playsinline muted id="storyVideoViewer">
     </video>
-    <div id="storyPhotoViewer" onclick="userDidClickNextStory()">
-    </div>
-  </div>
-  <img src="" id="fakeContentToPreloadImages" />
-</div>
-<script type='text/javascript'>
-let host = "https://instapipe.herokuapp.com/"
-let userId = "4409072"
+                <div id="storyPhotoViewer" onclick="userDidClickNextStory()">
+                </div>
+            </div>
+            <img src="" id="fakeContentToPreloadImages" />
+        </div>
+        <script type='text/javascript'>
+            let host = "https://instapipe.herokuapp.com/"
+            let userId = "4409072"
 
-var storiesToShow = null;
-var timeOutForPhotos = 4.0;
-var storyProgressSpacing = 5;
-var progressPadding = 2;
-var progressBars = null;
-var storiesContent = null;
+            var storiesToShow = null;
+            var timeOutForPhotos = 4.0;
+            var storyProgressSpacing = 5;
+            var progressPadding = 2;
+            var progressBars = null;
+            var storiesContent = null;
 
-var nextStoryTimeout = null;
-var currentIndex = -1;
+            var nextStoryTimeout = null;
+            var currentIndex = -1;
 
-function preloadStoriesIndex() {
-  var url = host + "stories.json?user_id=" + userId;
+            function preloadStoriesIndex() {
+                var url = host + "stories.json?user_id=" + userId;
 
-  var xmlHttp = new XMLHttpRequest();
-  xmlHttp.onreadystatechange = function() { 
-    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-      storiesContent = JSON.parse(xmlHttp.responseText)
-      if (storiesContent.length == 0) {
-        // Default it's shown, as it looks nicer
-        // and I post stories most days :joy:
-        document.getElementById("story-available").className += "story-not-available"
-      } else {
-        // preload the first story if it's a picture
-        if (!storiesContent[0]["is_video"]) {
-          document.getElementById("fakeContentToPreloadImages").src = storiesContent[0]["signed_url"]
-        }
-      }
-    }
-  };
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                        storiesContent = JSON.parse(xmlHttp.responseText)
+                        if (storiesContent.length > 0) {
+                            document.getElementById("story-available").classList.remove("story-not-available");
+                            // preload the first story if it's a picture
+                            if (!storiesContent[0]["is_video"]) {
+                                document.getElementById("fakeContentToPreloadImages").src = storiesContent[0]["signed_url"]
+                            }
+                        }
+                    }
+                };
 
-  xmlHttp.open("GET", url, true); // true = asynchronous 
-  xmlHttp.send(null);
-}
+                xmlHttp.open("GET", url, true); // true = asynchronous 
+                xmlHttp.send(null);
+            }
 
-function showStories() {
-  if (storiesContent == null || storiesContent.length == 0) {
-    return;
-  }
+            function showStories() {
+                if (storiesContent == null || storiesContent.length == 0) {
+                    return;
+                }
 
-  // Copy the profile picture URL to the story header, to only have to define it once
-  // we only do that once everything is loaded, as depending on the website
-  // the image node might not be acccessible yet
-  let profileImageURL = document.getElementById("storyProfilePicture").src
-  document.getElementById("storyHeaderProfilePicture").src = profileImageURL;
+                // Copy the profile picture URL to the story header, to only have to define it once
+                // we only do that once everything is loaded, as depending on the website
+                // the image node might not be acccessible yet
+                let profileImageURL = document.getElementById("storyProfilePicture").src
+                document.getElementById("storyHeaderProfilePicture").src = profileImageURL;
 
-  storiesToShow = []
-  progressBars = []
+                storiesToShow = []
+                progressBars = []
 
-  document.getElementById("storyViewer").style.display = "block"
+                document.getElementById("storyViewer").style.display = "block"
 
-  for (let storyIndex in storiesContent) {
-    let currentStory = storiesContent[storyIndex]
-    storiesToShow.push(currentStory)
-  }
+                for (let storyIndex in storiesContent) {
+                    let currentStory = storiesContent[storyIndex]
+                    storiesToShow.push(currentStory)
+                }
 
-  for (let currentStoryIndex in storiesToShow) {
-    let currentStory = storiesToShow[currentStoryIndex]
+                for (let currentStoryIndex in storiesToShow) {
+                    let currentStory = storiesToShow[currentStoryIndex]
 
-    // Append the progress items
-    var progressBarBackground = document.createElement("div")
-    progressBarBackground.className = "storyProgressBarItemBg"
-    progressBarBackground.style.width = "calc(" + (1.0 / storiesToShow.length) * 100 + "%" + " - " + progressPadding * 2 + "px)"
-    progressBarBackground.style.marginRight = progressPadding + "px"
-    progressBarBackground.style.marginLeft = progressPadding + "px"
-    document.getElementById("storyProgressBar").appendChild(progressBarBackground)
+                    // Append the progress items
+                    var progressBarBackground = document.createElement("div")
+                    progressBarBackground.className = "storyProgressBarItemBg"
+                    progressBarBackground.style.width = "calc(" + (1.0 / storiesToShow.length) * 100 + "%" + " - " + progressPadding * 2 + "px)"
+                    progressBarBackground.style.marginRight = progressPadding + "px"
+                    progressBarBackground.style.marginLeft = progressPadding + "px"
+                    document.getElementById("storyProgressBar").appendChild(progressBarBackground)
 
-    var progressBarForeground = document.createElement("div")
-    progressBarForeground.style.width = "0%"
-    progressBarForeground.className = "storyProgressBarItemFg"
-    progressBarBackground.appendChild(progressBarForeground)
+                    var progressBarForeground = document.createElement("div")
+                    progressBarForeground.style.width = "0%"
+                    progressBarForeground.className = "storyProgressBarItemFg"
+                    progressBarBackground.appendChild(progressBarForeground)
 
-    progressBars.push(progressBarForeground)
-  }
+                    progressBars.push(progressBarForeground)
+                }
 
-  currentIndex = 0
-  renderCurrentStory()
+                currentIndex = 0
+                renderCurrentStory()
 
-  var xmlHttp = new XMLHttpRequest();
-  xmlHttp.onreadystatechange = function() {}
-  xmlHttp.open("GET", host + "didOpenStories", true); // true = asynchronous 
-  xmlHttp.send(null);
-}
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {}
+                xmlHttp.open("GET", host + "didOpenStories", true); // true = asynchronous 
+                xmlHttp.send(null);
+            }
 
-function renderCurrentStory() {
-  currentStory = storiesToShow[currentIndex]
+            function renderCurrentStory() {
+                currentStory = storiesToShow[currentIndex]
 
-  for (let index in progressBars) {
-    let currentProgressBar = progressBars[index]
-    if (currentIndex > index) {
-      currentProgressBar.style.width = "100%"
-    } else {
-      currentProgressBar.style.width = "0%"
-    }
-  }
+                for (let index in progressBars) {
+                    let currentProgressBar = progressBars[index]
+                    if (currentIndex > index) {
+                        currentProgressBar.style.width = "100%"
+                    } else {
+                        currentProgressBar.style.width = "0%"
+                    }
+                }
 
-  // Show image/video
-  let videoViewer = document.getElementById("storyVideoViewer")
-  let photoViewer = document.getElementById("storyPhotoViewer")
-  let progressBarContent = progressBars[currentIndex]
+                // Show image/video
+                let videoViewer = document.getElementById("storyVideoViewer")
+                let photoViewer = document.getElementById("storyPhotoViewer")
+                let progressBarContent = progressBars[currentIndex]
 
-  document.getElementById("storyTimestamp").textContent = currentStory["formatted_time_diff"]
+                document.getElementById("storyTimestamp").textContent = currentStory["formatted_time_diff"]
 
-  if (currentStory["is_video"]) {
-    videoViewer.src = currentStory["signed_url"]
-    videoViewer.style.display = "block"
-    videoViewer.onended = function() {
-      if (currentIndex < storiesToShow.length - 1) {
-        currentIndex++;
-        renderCurrentStory();
-      } else {
-        dismissStories();
-      }
-    };
-    let videoUpdatedDuration = function() {
-      // this is triggered when the video file was loaded
-      // videos have dynamic length
-      animateProgressBar(progressBarContent, videoViewer.duration)
-      videoViewer.removeEventListener("durationchange", videoUpdatedDuration)
-    }
-    videoViewer.addEventListener("durationchange", videoUpdatedDuration)
-    videoViewer.load()
-    videoViewer.play()
-    photoViewer.style.display = "none"
-  } else {
-    photoViewer.style.backgroundImage = "url('" + currentStory["signed_url"] + "')"
-    videoViewer.style.display = "none"
-    photoViewer.style.display = "block"
-    animateProgressBar(progressBarContent, timeOutForPhotos) // photos are always x seconds
+                if (currentStory["is_video"]) {
+                    videoViewer.src = currentStory["signed_url"]
+                    videoViewer.style.display = "block"
+                    videoViewer.onended = function() {
+                        if (currentIndex < storiesToShow.length - 1) {
+                            currentIndex++;
+                            renderCurrentStory();
+                        } else {
+                            dismissStories();
+                        }
+                    };
+                    let videoUpdatedDuration = function() {
+                        // this is triggered when the video file was loaded
+                        // videos have dynamic length
+                        animateProgressBar(progressBarContent, videoViewer.duration)
+                        videoViewer.removeEventListener("durationchange", videoUpdatedDuration)
+                    }
+                    videoViewer.addEventListener("durationchange", videoUpdatedDuration)
+                    videoViewer.load()
+                    videoViewer.play()
+                    photoViewer.style.display = "none"
+                } else {
+                    photoViewer.style.backgroundImage = "url('" + currentStory["signed_url"] + "')"
+                    videoViewer.style.display = "none"
+                    photoViewer.style.display = "block"
+                    animateProgressBar(progressBarContent, timeOutForPhotos) // photos are always x seconds
 
-    // Advance to next story after X seconds
-    nextStoryTimeout = setTimeout(function() {
-      if (currentIndex < storiesToShow.length - 1) {
-        currentIndex++;
-        renderCurrentStory();
-      } else {
-        dismissStories();
-      }
-    }, timeOutForPhotos * 1000)
-  }
+                    // Advance to next story after X seconds
+                    nextStoryTimeout = setTimeout(function() {
+                        if (currentIndex < storiesToShow.length - 1) {
+                            currentIndex++;
+                            renderCurrentStory();
+                        } else {
+                            dismissStories();
+                        }
+                    }, timeOutForPhotos * 1000)
+                }
 
-  // Trigger the next one
-  if (currentIndex < storiesToShow.length - 1 && !storiesToShow[currentIndex + 1]["is_video"])
-  {
-    setTimeout(function() {
-      // Poor person's pre-loading of images, with a slight delay
-      document.getElementById("fakeContentToPreloadImages").src = storiesToShow[currentIndex + 1]["signed_url"]
-    }, timeOutForPhotos / 3.0 * 1000)
-  }
-}
+                // Trigger the next one
+                if (currentIndex < storiesToShow.length - 1 && !storiesToShow[currentIndex + 1]["is_video"]) {
+                    setTimeout(function() {
+                        // Poor person's pre-loading of images, with a slight delay
+                        document.getElementById("fakeContentToPreloadImages").src = storiesToShow[currentIndex + 1]["signed_url"]
+                    }, timeOutForPhotos / 3.0 * 1000)
+                }
+            }
 
-function animateProgressBar(progressBar, duration) {
-  progressBar.style.animationName = "storyViewProgress";
-  progressBar.style.animationDuration = duration + "s";
-}
+            function animateProgressBar(progressBar, duration) {
+                progressBar.style.animationName = "storyViewProgress";
+                progressBar.style.animationDuration = duration + "s";
+            }
 
-function userDidClickPreviousStory() {
-  if (currentIndex > 0) {
-    stopAllAnimations()
-    currentIndex--;
-    renderCurrentStory();
-  } else {
-    dismissStories();
-  }
-}
+            function userDidClickPreviousStory() {
+                if (currentIndex > 0) {
+                    stopAllAnimations()
+                    currentIndex--;
+                    renderCurrentStory();
+                } else {
+                    dismissStories();
+                }
+            }
 
-function userDidClickNextStory() {
-  if (currentIndex < storiesToShow.length - 1) {
-    stopAllAnimations()
-    currentIndex++;
-    renderCurrentStory();
-  } else {
-    dismissStories();
-  }
-}
+            function userDidClickNextStory() {
+                if (currentIndex < storiesToShow.length - 1) {
+                    stopAllAnimations()
+                    currentIndex++;
+                    renderCurrentStory();
+                } else {
+                    dismissStories();
+                }
+            }
 
-function stopAllAnimations() {
-  clearTimeout(nextStoryTimeout)
-  document.getElementById("storyVideoViewer").onended = null
+            function stopAllAnimations() {
+                clearTimeout(nextStoryTimeout)
+                document.getElementById("storyVideoViewer").onended = null
 
-  for (let index in progressBars) {
-    let currentProgressBar = progressBars[index]
-    currentProgressBar.style.animationName = null
-  }
-}
+                for (let index in progressBars) {
+                    let currentProgressBar = progressBars[index]
+                    currentProgressBar.style.animationName = null
+                }
+            }
 
-function dismissStories() {
-  document.getElementById("storyViewer").style.display = "none"
-  document.getElementById("storyProgressBar").innerHTML = ""
-  stopAllAnimations()
-}
+            function dismissStories() {
+                document.getElementById("storyViewer").style.display = "none"
+                document.getElementById("storyProgressBar").innerHTML = ""
+                stopAllAnimations()
+            }
 
-window.addEventListener("keyup", function(e) {
-  if (e.keyCode == 27) { // ESC
-    dismissStories()
-    return true;
-  }
-  if (e.keyCode == 37) { // Left
-    userDidClickPreviousStory();
-  }
-  if (e.keyCode == 39) { // Right
-    userDidClickNextStory();
-  }
-}, false);
+            window.addEventListener("keyup", function(e) {
+                if (e.keyCode == 27) { // ESC
+                    dismissStories()
+                    return true;
+                }
+                if (e.keyCode == 37) { // Left
+                    userDidClickPreviousStory();
+                }
+                if (e.keyCode == 39) { // Right
+                    userDidClickNextStory();
+                }
+            }, false);
 
-preloadStoriesIndex();
-
-</script>
-<style type='text/css'>
-#storyProfilePicture {
-  width: 128px;
-  height: 128px;
-  border-radius: 70px;
-  margin-left: 3px;
-  margin-top: 3px;
-  cursor: pointer;
-  border: 4px solid white;
-}
-
-#story-available {
-  background-image: linear-gradient(rgb(186, 62, 138), #fba051);
-  height: 142px;
-  width: 142px;
-  z-index: -10;
-  border-radius: 70px;
-  margin-bottom: 15px;
-}
-
-#story-available.story-not-available {
-  background-image: none !important;
-}
-
-#storyViewer {
-  height: 100%;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 100;
-  text-align: center;
-  display: none;
-
-  font-family: 'Helvetica Neue', sans-serif;
-  font-weight: normal;
-}
-#storyViewer > #storyViewerDimmedBackground {
-  /* This is a separate div to allow onclick events */
-  background-color: rgba(0, 0, 0, 0.8);
-  height: 100%;
-  width: 100%;
-  z-index: -1;
-  position: absolute;
-}
-
-#storyViewer p {
-  color: #686868;
-  font-size: 20px;
-  line-height: 24px;
-  margin: 0 0 24px;
-  text-align: center;
-  text-justify: inter-word;
-}
-
-#storyViewer > #storyContent {
-  width: 512px;
-  max-width: 80%; /* for mobile devices */
-  margin-top: 30px;
-  display: inline-block;
-
-  /* 
+            preloadStoriesIndex();
+        </script>
+        <style type='text/css'>
+            #storyProfilePicture {
+                width: 128px;
+                height: 128px;
+                border-radius: 70px;
+                margin-left: 3px;
+                margin-top: 3px;
+                cursor: pointer;
+                border: 4px solid white;
+            }
+            
+            #story-available {
+                background-image: linear-gradient(rgb(186, 62, 138), #fba051);
+                height: 142px;
+                width: 142px;
+                z-index: -10;
+                border-radius: 70px;
+                margin-bottom: 15px;
+            }
+            
+            #story-available.story-not-available {
+                background-image: none !important;
+            }
+            
+            #storyViewer {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 100;
+                text-align: center;
+                display: none;
+                font-family: 'Helvetica Neue', sans-serif;
+                font-weight: normal;
+            }
+            
+            #storyViewer>#storyViewerDimmedBackground {
+                /* This is a separate div to allow onclick events */
+                background-color: rgba(0, 0, 0, 0.8);
+                height: 100%;
+                width: 100%;
+                z-index: -1;
+                position: absolute;
+            }
+            
+            #storyViewer p {
+                color: #686868;
+                font-size: 20px;
+                line-height: 24px;
+                margin: 0 0 24px;
+                text-align: center;
+                text-justify: inter-word;
+            }
+            
+            #storyViewer>#storyContent {
+                width: 512px;
+                max-width: 80%;
+                /* for mobile devices */
+                margin-top: 30px;
+                display: inline-block;
+                /* 
     To get the right aspect ratio, while still having a dynamic content size
     https://stackoverflow.com/questions/1495407/maintain-the-aspect-ratio-of-a-div-with-css
     IG content: 910px height to 512px width = ~178%
     So the `padding-bottom` sets the height of the content
   */
-  padding-bottom: 178%;
-}
+                padding-bottom: 178%;
+            }
+            
+            #storyViewer>#storyContent>.storyButton {
+                position: fixed;
+                top: calc(910px - 450px);
+                background-color: rgba(200, 200, 200, 0.88);
+                padding: 10px;
+                color: rgba(0, 0, 0, 0.8);
+                font-weight: bolder;
+                font-size: 16px;
+                border-radius: 18px;
+                width: 20px;
+                height: 20px;
+                text-align: center;
+                cursor: pointer;
+            }
+            
+            #storyViewer>#storyContent>#storyBackButton {
+                left: 50px;
+            }
+            
+            #storyViewer>#storyContent>#storyNextButton {
+                right: 53px;
+                /* no idea where the difference comes from */
+            }
+            
+            #storyViewer>#storyContent>#storyPhotoViewer {
+                width: 100%;
+                padding-bottom: 178%;
+                /* see comment in #storyContent */
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: 50% 50%;
+            }
+            
+            #storyViewer>#storyContent>#storyVideoViewer {
+                padding-bottom: 178%;
+                /* see comment in #storyContent */
+                width: 100%;
+            }
+            
+            #storyViewer>#storyContent>#storyProgressBar {
+                width: calc(100% + 4px);
+                margin-left: -2px;
+                height: 3px;
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            
+            #storyViewer>#storyContent>#storyProgressBar>.storyProgressBarItemBg {
+                border-radius: 6px;
+                background-color: rgba(187, 187, 187, 0.6);
+                height: 100%;
+                display: inline-block;
+                float: left;
+            }
+            
+            .storyProgressBarItemFg {
+                background-color: #FFF;
+                height: 100%;
+                border-radius: 3px;
+                animation-timing-function: linear;
+            }
+            
+            #fakeContentToPreloadImages {
+                height: 0;
+                width: 0;
+                opacity: 0;
+            }
+            
+            @keyframes storyViewProgress {
+                from {
+                    width: 0%;
+                }
+                to {
+                    width: 100%;
+                }
+            }
+            /* Story header */
+            
+            #storyHeader {
+                height: 50px;
+                text-align: left;
+            }
+            
+            #storyHeader>#storyHeaderProfilePicture {
+                height: 38px;
+                width: 38px;
+                border-radius: 19px;
+                cursor: pointer;
+                margin-top: 7px;
+                display: block-inline;
+            }
+            
+            #storyHeader>#storyUserlink {
+                display: block-inline;
+                margin-left: 50px;
+                text-align: left;
+                margin-top: -40px;
+                /* hacky */
+                padding-top: 0;
+                font-size: 20px;
+            }
+            
+            #storyHeader>#storyUserlink>a {
+                color: white !important;
+                text-decoration: none;
+            }
+            
+            #storyHeader>#storyTimestamp {
+                color: #777;
+                display: block-inline;
+                margin-left: 50px;
+                text-align: left;
+                margin-top: -28px;
+                padding-top: 0;
+                font-size: 16px;
+            }
+            
+            #storyHeader>#poweredByInstapipe {
+                display: block-inline;
+                margin-left: 150px;
+                text-align: right;
+                margin-top: -50px;
+                /* hacky */
+                padding-top: 0;
+                font-size: 16px;
+            }
+            
+            #storyHeader>#poweredByInstapipe>a {
+                color: #999 !important;
+                text-decoration: none;
+            }
+        </style>
+        <p style="text-align: center;"><b>⬆️ Give it a try, click on the picture ⬆️</b></p>
+        <style type="text/css">
+            #story-available {
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+        <p><br /></p>
+        <h2 id="background">Background</h2>
+        <p>You want to share experiences as they are happening in your life. Instagram Stories is a great way to do so, thanks to cross-posting to Facebook, Messenger and Instagram itself, allowing most people to view your stories.</p>
+        <p>However just like Snapchat, the platforms try to lock you in, with the content <strong>you</strong> create. Many of my family members and close friends don't use FB/IG daily, but still wanted to stay up to date on what I'm up to.</p>
+        <p>Due to lack of an official API, and any kinds of integrations, the only way to access your stories is through the unofficial API the Instagram mobile- and web client use.</p>
+        <h2 id="solution">Solution</h2>
+        <p>
+            <a href="https://twitter.com/KrauseFx"><img src="https://img.shields.io/badge/author-@KrauseFx-blue.svg?style=flat" alt="" /></a>
+        </p>
+        <p>A simple web service that automatically downloads and publishes your stories on various platforms. It's open source and fully self hosted, check it out <a href="https://github.com/KrauseFx/instapipe">on GitHub</a>.</p>
+        <h3 id="embed-into-websites">Embed into websites</h3>
+        <p>
+            <a href="https://whereisfelix.today">
+                <img src="assets/whereisfelixScreenshot.jpg" />
+            </a>
+        </p>
+        <p>Showing what you're up to on the websites you operate is an easy way to make your online presence more personal.</p>
+        <ul>
+            <li><a href="https://whereisfelix.today">On whereisfelix.today</a></li>
+            <li><a href="https://krausefx.com">Integrated into krausefx.com</a> (desktop only)</li>
+            <li><a href="https://krausefx.github.io/instapipe/web/index.html">Plain live demo</a></li>
+            <li><a href="">Top of this page</a></li>
+        </ul>
+        <p><strong>Features</strong></p>
+        <ul>
+            <li>Design similar to instagram.com web</li>
+            <li>Arrow keys to go back and forth between stories</li>
+            <li>Support for photos and videos</li>
+            <li>Support for desktop and mobile browsers</li>
+            <li>Dismiss stories using ESC key, and clicking the dimmed area</li>
+            <li>Pre-loading of the next story for instant rendering</li>
+            <li>Basic features like rendering of the progress bar, the relative time stamp, as well as linking to your profile</li>
+            <li>Zero dependencies, plain JavaScript, CSS and HTML in a single file</li>
+        </ul>
+        <h3 id="provide-a-json-api">Provide a JSON API</h3>
+        <p>Of course it also provides you with a JSON API, that can be used to integrate your Instagram stories into any app or service. The API includes all relevant data, including the raw image, location and the exact resolution of the media assets.</p>
+        <p><img src="assets/apiScreenshot.jpg" /></p>
+        <p><a href="https://instapipe.herokuapp.com/stories.json?user_id=4409072">https://instapipe.herokuapp.com/stories.json?user_id=4409072</a></p>
+        <p>Make sure to manually copy &amp; paste this in a new tab to avoid the cross-site scripting protection</p>
+        <h3 id="telegram-group">Telegram group</h3>
+        <p>Many of my friends don't want to check Instagram every day, but still want to stay up to date with what I'm up to. Since they all use Telegram already, I set up a channel that automatically shows the stories I post.</p>
+        <p>
+            <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">
+                <img src="assets/telegramScreenshot.jpg" />
+            </a>
+        </p>
+        <p>A <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">Telegram group</a> containing all my latest stories. In particular nice to get an overview over all your most recent stories. Join it <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">here</a>.</p>
+        <h2 id="how-it-works">How it works</h2>
+        <p>Instapipe is a simple server, that periodically fetches your most recent Instagram stories. As soon as a new story is available, it will</p>
+        <ul>
+            <li>Download the highest resolution photo/video and store it on your personal Google Cloud Bucket</li>
+            <li>Store the associated metadata in a database you own, the data includes</li>
+            <li>24 hours signed URL to the full-resolution photo/video of your Google Cloud Storage</li>
+            <li>The full path of the resource referencing your Google Cloud bucket</li>
+            <li>The user ID who published the asset</li>
+            <li>The height and width of the photo/video</li>
+            <li>The exact time stamp of publishing</li>
+            <li>An <code>is_video</code> flag</li>
+            <li>The location (if a location tag is attached)
+                <ul>
+                    <li>Location Name (e.g. <code>Das Gym</code>)</li>
+                    <li><code>lat</code> and <code>lng</code> coordinates</li>
+                </ul>
+            </li>
+            <li>Post the new story into a Telegram group (<a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">check it out here</a>)</li>
+        </ul>
+        <p><img src="assets/databaseScreenshot.jpg" /></p>
+        <p>At the same time, some very basic metrics will be stored:</p>
+        <ul>
+            <li>Per day, how many people watched at least one story (not unique users, if a user watches at least one twice, it will be counted twice)</li>
+            <li>Per day, how many times were the stories pre-fetched (meaning the instapipe code was loaded)</li>
+        </ul>
+        <p>The above metrics should only give you a rough idea on how many people have watched stories, no personal data is stored from the users, I don't want this to be the reason to add a cookie warning to a website.</p>
+        <h2 id="can-i-use-it">Can I use it?</h2>
+        <p>For now, you'll have to be an engineer to be able to use it, as instapipe.net is completely self-hosted. Check out the <a href="https://github.com/krausefx/instapipe">GitHub repo</a> to access instructions and the source code, in particular
+            <a href="https://github.com/KrauseFx/instapipe/blob/master/DEVELOPMENT.md"><code>DEVELOPMENT.md</code></a>.</p>
+        <p>If you're not an engineer, and are interested in using this on your website, via a Telegram channel or another platform, please drop me a message on <a href="https://twitter.com/KrauseFx">Twitter@KrauseFx</a> or <a href="https://instagram.com/KrauseFx">Instagram@KrauseFx</a>,
+            so I can see if demand is there to put in the extra work to provide instapipe as a service.</p>
+        <h2 id="potential">Potential</h2>
+        <p>This is just the beginning, highly optimized for what I needed the bot for. There are so many other interesting things that could be built on top.</p>
+        <h3 id="plug--play-integrations">Plug &amp; Play integrations</h3>
+        <p>Right now Telegram and the API are hard-coded. However ideally you could write plugins or integrations to pipe the data over to any other platform. Maybe even an integration with <a href="https://ifttt.com">IFTTT</a> would make sense (<a href="https://github.com/KrauseFx/instapipe/issues/13">#13</a>).</p>
+        <h3 id="multi-user-support">Multi-user support</h3>
+        <p>Right now, this project only supports a single user at a time. It's designed in a way to support any number of users in the future (<a href="https://github.com/KrauseFx/instapipe/issues/new">#22</a>).</p>
+        <h3 id="rendering-of-a-mapglobe">Rendering of a map/globe</h3>
+        <p>A map or a 3D globe, moving around, as the stories are rendered or maybe even a map view, with the stories on the map, onclick renders the story (<a href="https://github.com/KrauseFx/instapipe/issues/12">#12</a>).</p>
+        <h3 id="embed-pinned-stories">Embed pinned stories</h3>
+        <p>Integrating your pinned stories onto your website would be a cool feature, however I didn't need it for myself (<a href="https://github.com/KrauseFx/instapipe/issues/3">#3</a>).</p>
+        <h3 id="provide-rss-feed">Provide RSS feed</h3>
+        <p>Publishing an RSS feed would be an easy way to integrate into various services, including IFTTT (<a href="https://github.com/KrauseFx/instapipe/issues/6">#6</a>).</p>
+        <p><br /></p>
+        <p style="margin-bottom: 0px;">
+            <small>Website generated using <a href="https://markdown-to-github-style-web.com/" target="_blank">markdown-to-html-github-style.com</a></small></p>
 
-#storyViewer > #storyContent > .storyButton {
-  position: fixed;
-  top: calc(910px - 450px);
-  background-color: rgba(200, 200, 200, 0.88);
-  padding: 10px;
-  color: rgba(0, 0, 0, 0.8);
-  font-weight: bolder;
-  font-size: 16px;
-  border-radius: 18px;
-  width: 20px;
-  height: 20px;
-  text-align: center;
-  cursor: pointer;
-}
-
-#storyViewer > #storyContent > #storyBackButton {
-  left: 50px;
-}
-
-#storyViewer > #storyContent > #storyNextButton {
-  right: 53px; /* no idea where the difference comes from */
-}
-
-#storyViewer > #storyContent > #storyPhotoViewer {
-  width: 100%;
-  padding-bottom: 178%; /* see comment in #storyContent */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-}
-
-#storyViewer > #storyContent > #storyVideoViewer {
-  padding-bottom: 178%; /* see comment in #storyContent */
-  width: 100%;
-}
-
-#storyViewer > #storyContent > #storyProgressBar {
-  width: calc(100% + 4px);
-  margin-left: -2px;
-  height: 3px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-#storyViewer > #storyContent > #storyProgressBar > .storyProgressBarItemBg {
-  border-radius: 6px;
-  background-color: rgba(187, 187, 187, 0.6);
-  height: 100%;
-  display: inline-block;
-  float: left;
-}
-
-.storyProgressBarItemFg {
-  background-color: #FFF;
-  height: 100%;
-  border-radius: 3px;
-  animation-timing-function: linear;
-}
-
-#fakeContentToPreloadImages {
-  height: 0;
-  width: 0;
-  opacity: 0;
-}
-
-@keyframes storyViewProgress {
-  from { width: 0%; }
-  to { width: 100%; }
-}
-
-/* Story header */
-#storyHeader {
-  height: 50px;
-  text-align: left;
-}
-
-#storyHeader > #storyHeaderProfilePicture {
-  height: 38px;
-  width: 38px;
-  border-radius: 19px;
-  cursor: pointer;
-  margin-top: 7px;
-  display: block-inline;
-}
-
-#storyHeader > #storyUserlink {
-  display: block-inline;
-  margin-left: 50px;
-  text-align: left;
-  margin-top: -40px; /* hacky */
-  padding-top: 0;
-  font-size: 20px;
-}
-
-#storyHeader > #storyUserlink > a {
-  color: white !important;
-  text-decoration: none;
-}
-
-#storyHeader > #storyTimestamp {
-  color: #777;
-  display: block-inline;
-  margin-left: 50px;
-  text-align: left;
-  margin-top: -28px;
-  padding-top: 0;
-  font-size: 16px;
-}
-
-#storyHeader > #poweredByInstapipe {
-  display: block-inline;
-  margin-left: 150px;
-  text-align: right;
-  margin-top: -50px; /* hacky */
-  padding-top: 0;
-  font-size: 16px;
-}
-
-#storyHeader > #poweredByInstapipe > a {
-  color: #999 !important;
-  text-decoration: none;
-}
-
-</style>
-<p style="text-align: center;"><b>⬆️ Give it a try, click on the picture ⬆️</b></p>
-<style type="text/css">
-  #story-available {
-    margin-left: auto;
-    margin-right: auto;
-  }
-</style>
-<p><br /></p>
-<h2 id="background">Background</h2>
-<p>You want to share experiences as they are happening in your life. Instagram Stories is a great way to do so, thanks to cross-posting to Facebook, Messenger and Instagram itself, allowing most people to view your stories.</p>
-<p>However just like Snapchat, the platforms try to lock you in, with the content <strong>you</strong> create. Many of my family members and close friends don't use FB/IG daily, but still wanted to stay up to date on what I'm up to.</p>
-<p>Due to lack of an official API, and any kinds of integrations, the only way to access your stories is through the unofficial API the Instagram mobile- and web client use.</p>
-<h2 id="solution">Solution</h2>
-<p><a href="https://twitter.com/KrauseFx"><img src="https://img.shields.io/badge/author-@KrauseFx-blue.svg?style=flat" alt="" /></a></p>
-<p>A simple web service that automatically downloads and publishes your stories on various platforms. It's open source and fully self hosted, check it out <a href="https://github.com/KrauseFx/instapipe">on GitHub</a>.</p>
-<h3 id="embed-into-websites">Embed into websites</h3>
-<p><a href="https://whereisfelix.today">
-  <img src="assets/whereisfelixScreenshot.jpg" />
-</a></p>
-<p>Showing what you're up to on the websites you operate is an easy way to make your online presence more personal.</p>
-<ul>
-<li><a href="https://whereisfelix.today">On whereisfelix.today</a></li>
-<li><a href="https://krausefx.com">Integrated into krausefx.com</a> (desktop only)</li>
-<li><a href="https://krausefx.github.io/instapipe/web/index.html">Plain live demo</a></li>
-<li><a href="">Top of this page</a></li>
-</ul>
-<p><strong>Features</strong></p>
-<ul>
-<li>Design similar to instagram.com web</li>
-<li>Arrow keys to go back and forth between stories</li>
-<li>Support for photos and videos</li>
-<li>Support for desktop and mobile browsers</li>
-<li>Dismiss stories using ESC key, and clicking the dimmed area</li>
-<li>Pre-loading of the next story for instant rendering</li>
-<li>Basic features like rendering of the progress bar, the relative time stamp, as well as linking to your profile</li>
-<li>Zero dependencies, plain JavaScript, CSS and HTML in a single file</li>
-</ul>
-<h3 id="provide-a-json-api">Provide a JSON API</h3>
-<p>Of course it also provides you with a JSON API, that can be used to integrate your Instagram stories into any app or service. The API includes all relevant data, including the raw image, location and the exact resolution of the media assets.</p>
-<p><img src="assets/apiScreenshot.jpg" /></p>
-<p><a href="https://instapipe.herokuapp.com/stories.json?user_id=4409072">https://instapipe.herokuapp.com/stories.json?user_id=4409072</a></p>
-<p>Make sure to manually copy &amp; paste this in a new tab to avoid the cross-site scripting protection</p>
-<h3 id="telegram-group">Telegram group</h3>
-<p>Many of my friends don't want to check Instagram every day, but still want to stay up to date with what I'm up to. Since they all use Telegram already, I set up a channel that automatically shows the stories I post.</p>
-<p><a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">
-  <img src="assets/telegramScreenshot.jpg" />
-</a></p>
-<p>A <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">Telegram group</a> containing all my latest stories. In particular nice to get an overview over all your most recent stories. Join it <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">here</a>.</p>
-<h2 id="how-it-works">How it works</h2>
-<p>Instapipe is a simple server, that periodically fetches your most recent Instagram stories. As soon as a new story is available, it will</p>
-<ul>
-<li>Download the highest resolution photo/video and store it on your personal Google Cloud Bucket</li>
-<li>Store the associated metadata in a database you own, the data includes</li>
-<li>24 hours signed URL to the full-resolution photo/video of your Google Cloud Storage</li>
-<li>The full path of the resource referencing your Google Cloud bucket</li>
-<li>The user ID who published the asset</li>
-<li>The height and width of the photo/video</li>
-<li>The exact time stamp of publishing</li>
-<li>An <code>is_video</code> flag</li>
-<li>The location (if a location tag is attached)<ul>
-<li>Location Name (e.g. <code>Das Gym</code>)</li>
-<li><code>lat</code> and <code>lng</code> coordinates</li></ul></li>
-<li>Post the new story into a Telegram group (<a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">check it out here</a>)</li>
-</ul>
-<p><img src="assets/databaseScreenshot.jpg" /></p>
-<p>At the same time, some very basic metrics will be stored:</p>
-<ul>
-<li>Per day, how many people watched at least one story (not unique users, if a user watches at least one twice, it will be counted twice)</li>
-<li>Per day, how many times were the stories pre-fetched (meaning the instapipe code was loaded)</li>
-</ul>
-<p>The above metrics should only give you a rough idea on how many people have watched stories, no personal data is stored from the users, I don't want this to be the reason to add a cookie warning to a website.</p>
-<h2 id="can-i-use-it">Can I use it?</h2>
-<p>For now, you'll have to be an engineer to be able to use it, as instapipe.net is completely self-hosted. Check out the <a href="https://github.com/krausefx/instapipe">GitHub repo</a> to access instructions and the source code, in particular <a href="https://github.com/KrauseFx/instapipe/blob/master/DEVELOPMENT.md"><code>DEVELOPMENT.md</code></a>.</p>
-<p>If you're not an engineer, and are interested in using this on your website, via a Telegram channel or another platform, please drop me a message on <a href="https://twitter.com/KrauseFx">Twitter@KrauseFx</a> or <a href="https://instagram.com/KrauseFx">Instagram@KrauseFx</a>, so I can see if demand is there to put in the extra work to provide instapipe as a service.</p>
-<h2 id="potential">Potential</h2>
-<p>This is just the beginning, highly optimized for what I needed the bot for. There are so many other interesting things that could be built on top.</p>
-<h3 id="plug--play-integrations">Plug &amp; Play integrations</h3>
-<p>Right now Telegram and the API are hard-coded. However ideally you could write plugins or integrations to pipe the data over to any other platform. Maybe even an integration with <a href="https://ifttt.com">IFTTT</a> would make sense (<a href="https://github.com/KrauseFx/instapipe/issues/13">#13</a>).</p>
-<h3 id="multi-user-support">Multi-user support</h3>
-<p>Right now, this project only supports a single user at a time. It's designed in a way to support any number of users in the future (<a href="https://github.com/KrauseFx/instapipe/issues/new">#22</a>).</p>
-<h3 id="rendering-of-a-mapglobe">Rendering of a map/globe</h3>
-<p>A map or a 3D globe, moving around, as the stories are rendered or maybe even a map view, with the stories on the map, onclick renders the story (<a href="https://github.com/KrauseFx/instapipe/issues/12">#12</a>).</p>
-<h3 id="embed-pinned-stories">Embed pinned stories</h3>
-<p>Integrating your pinned stories onto your website would be a cool feature, however I didn't need it for myself (<a href="https://github.com/KrauseFx/instapipe/issues/3">#3</a>).</p>
-<h3 id="provide-rss-feed">Provide RSS feed</h3>
-<p>Publishing an RSS feed would be an easy way to integrate into various services, including IFTTT (<a href="https://github.com/KrauseFx/instapipe/issues/6">#6</a>).</p>
-<p><br /></p>
-<p style="margin-bottom: 0px;">
-  <small>Website generated using <a href="https://markdown-to-github-style-web.com/" target="_blank">markdown-to-html-github-style.com</a></small></p>
-
-        </div>
-        <style type='text/css'>body {
-  font: 400 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #111;
-  background-color: #fdfdfd;
-  -webkit-text-size-adjust: 100%;
-  -webkit-font-feature-settings: "kern" 1;
-  -moz-font-feature-settings: "kern" 1;
-  -o-font-feature-settings: "kern" 1;
-  font-feature-settings: "kern" 1;
-  font-kerning: normal;
-  padding: 30px;
-}
-
-@media only screen and (max-width: 600px) {
-  body {
-    padding: 5px;
-  }
-
-  body > #content {
-    padding: 0px 20px 20px 20px !important;
-  }
-}
-
-body > #content {
-  margin: 0px;
-  max-width: 900px;
-  border: 1px solid #e1e4e8;
-  padding: 10px 40px;
-  padding-bottom: 20px;
-  border-radius: 2px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-hr {
-  color: #bbb;
-  background-color: #bbb;
-  height: 1px;
-  flex: 0 1 auto;
-  margin: 1em 0;
-  padding: 0;
-  border: none;
-}
-
-/**
+    </div>
+    <style type='text/css'>
+        body {
+            font: 400 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #111;
+            background-color: #fdfdfd;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-feature-settings: "kern" 1;
+            -moz-font-feature-settings: "kern" 1;
+            -o-font-feature-settings: "kern" 1;
+            font-feature-settings: "kern" 1;
+            font-kerning: normal;
+            padding: 30px;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+            body>#content {
+                padding: 0px 20px 20px 20px !important;
+            }
+        }
+        
+        body>#content {
+            margin: 0px;
+            max-width: 900px;
+            border: 1px solid #e1e4e8;
+            padding: 10px 40px;
+            padding-bottom: 20px;
+            border-radius: 2px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        hr {
+            color: #bbb;
+            background-color: #bbb;
+            height: 1px;
+            flex: 0 1 auto;
+            margin: 1em 0;
+            padding: 0;
+            border: none;
+        }
+        /**
  * Links
  */
-a {
-  color: #0366d6;
-  text-decoration: none; }
-  a:visited {
-    color: #0366d6; }
-  a:hover {
-    color: #0366d6;
-    text-decoration: underline; }
-
-pre {
-  background-color: #f6f8fa;
-  border-radius: 3px;
-  font-size: 85%;
-  line-height: 1.45;
-  overflow: auto;
-  padding: 16px;
-}
-
-/**
+        
+        a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+        
+        a:visited {
+            color: #0366d6;
+        }
+        
+        a:hover {
+            color: #0366d6;
+            text-decoration: underline;
+        }
+        
+        pre {
+            background-color: #f6f8fa;
+            border-radius: 3px;
+            font-size: 85%;
+            line-height: 1.45;
+            overflow: auto;
+            padding: 16px;
+        }
+        /**
   * Code blocks
   */
-
-code {
-  background-color: rgba(27,31,35,.05);
-  border-radius: 3px;
-  font-size: 85%;
-  margin: 0;
-  word-wrap: break-word;
-  padding: .2em .4em;
-  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
-}
-
-pre > code {
-  background-color: transparent;
-  border: 0;
-  display: inline;
-  line-height: inherit;
-  margin: 0;
-  overflow: visible;
-  padding: 0;
-  word-wrap: normal;
-  font-size: 100%;
-}
-
-
-/**
+        
+        code {
+            background-color: rgba(27, 31, 35, .05);
+            border-radius: 3px;
+            font-size: 85%;
+            margin: 0;
+            word-wrap: break-word;
+            padding: .2em .4em;
+            font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
+        }
+        
+        pre>code {
+            background-color: transparent;
+            border: 0;
+            display: inline;
+            line-height: inherit;
+            margin: 0;
+            overflow: visible;
+            padding: 0;
+            word-wrap: normal;
+            font-size: 100%;
+        }
+        /**
  * Blockquotes
  */
-blockquote {
-  margin-left: 30px;
-  margin-top: 0px;
-  margin-bottom: 16px;
-  border-left-width: 3px;
-  padding: 0 1em;
-  color: #828282;
-  border-left: 4px solid #e8e8e8;
-  padding-left: 15px;
-  font-size: 18px;
-  letter-spacing: -1px;
-  font-style: italic;
-}
-blockquote * {
-  font-style: normal !important;
-  letter-spacing: 0;
-  color: #6a737d !important;
-}
-
-/**
+        
+        blockquote {
+            margin-left: 30px;
+            margin-top: 0px;
+            margin-bottom: 16px;
+            border-left-width: 3px;
+            padding: 0 1em;
+            color: #828282;
+            border-left: 4px solid #e8e8e8;
+            padding-left: 15px;
+            font-size: 18px;
+            letter-spacing: -1px;
+            font-style: italic;
+        }
+        
+        blockquote * {
+            font-style: normal !important;
+            letter-spacing: 0;
+            color: #6a737d !important;
+        }
+        /**
  * Tables
  */
-table {
-  border-spacing: 2px;
-  display: block;
-  font-size: 14px;
-  overflow: auto;
-  width: 100%;
-  margin-bottom: 16px;
-  border-spacing: 0;
-  border-collapse: collapse;
-}
-
-td {
-  padding: 6px 13px;
-  border: 1px solid #dfe2e5;
-}
-
-th {
-  font-weight: 600;
-  padding: 6px 13px;
-  border: 1px solid #dfe2e5;
-}
-
-tr {
-  background-color: #fff;
-  border-top: 1px solid #c6cbd1;
-}
-
-table tr:nth-child(2n) {
-  background-color: #f6f8fa;
-}
-
-/**
+        
+        table {
+            border-spacing: 2px;
+            display: block;
+            font-size: 14px;
+            overflow: auto;
+            width: 100%;
+            margin-bottom: 16px;
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+        
+        td {
+            padding: 6px 13px;
+            border: 1px solid #dfe2e5;
+        }
+        
+        th {
+            font-weight: 600;
+            padding: 6px 13px;
+            border: 1px solid #dfe2e5;
+        }
+        
+        tr {
+            background-color: #fff;
+            border-top: 1px solid #c6cbd1;
+        }
+        
+        table tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        /**
  * Others
  */
+        
+        img {
+            max-width: 100%;
+        }
+        
+        p {
+            line-height: 24px;
+            font-weight: 400;
+            font-size: 16px;
+            color: #24292e;
+        }
+        
+        ul {
+            margin-top: 0;
+        }
+        
+        li {
+            color: #24292e;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        
+        li+li {
+            margin-top: 0.25em;
+        }
+        
+        * {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            color: #24292e;
+        }
+        
+        a:visited {
+            color: #0366d6;
+        }
+        
+        h1,
+        h2,
+        h3 {
+            border-bottom: 1px solid #eaecef;
+            color: #111;
+            /* Darker */
+        }
+    </style>
+</body>
 
-img {
-  max-width: 100%;
-}
-
-p {
-  line-height: 24px;
-  font-weight: 400;
-  font-size: 16px;
-  color: #24292e; }
-
-ul {
-  margin-top: 0; }
-
-li {
-  color: #24292e;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.5; }
-
-li + li {
-  margin-top: 0.25em; }
-
-* {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  color: #24292e; }
-
-a:visited {
-  color: #0366d6; }
-
-h1, h2, h3 {
-  border-bottom: 1px solid #eaecef;
-  color: #111;
-  /* Darker */ }</style>
-      </body>
-    </html>
+</html>
