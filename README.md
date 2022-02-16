@@ -271,6 +271,10 @@ preloadStoriesIndex();
   background-image: none !important;
 }
 
+#story-available.story-not-available>img {
+  cursor: default !important;
+}
+
 #storyViewer {
   height: 100%;
   width: 100%;
