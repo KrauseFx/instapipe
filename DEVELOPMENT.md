@@ -38,6 +38,11 @@ export GC_BUCKET_NAME=""
 export GC_KEYS=""
 ```
 
+To get the `USER_TO_WATCH` ID you have to access [https://www.instagram.com/web/search/topsearch/?query=KrauseFx](https://www.instagram.com/web/search/topsearch/?query=KrauseFx) and copy the `pk` value.
+
+To get the `TELEGRAM_CHAT_ID`, use Telegram Web, open the Group, and look at the address bar, find something like `-1647951758`, and prefix it with `-100` (https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id/69302407#69302407)
+
+
 `GC_KEYS` can either be an environment variable, or you can pass the Google Cloud credentials by having a `gc_keys.json` file in the root directory of the project
 
 ### Instagram keys

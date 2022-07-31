@@ -18,8 +18,7 @@ module Instapipe
       self.telegram_client = ::Telegram::Bot::Client.new(ENV["TELEGRAM_TOKEN"])
     end
 
-    def stories(user_id:)
-      chat_id = ENV["TELEGRAM_CHAT_ID"]
+    def stories(user_id:, chat_id:)
       uri = URI("https://i.instagram.com/api/v1/feed/user/#{user_id}/reel_media/")
 
       # Create client
