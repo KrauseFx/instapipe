@@ -32,14 +32,24 @@ module Instapipe
       req.add_field "User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13F69 Instagram 8.4.0 (iPhone7,2; iPhone OS 9_3_2; nb_NO; nb-NO; scale=2.00; 750x1334"
 
       # Fetch Request
-      res = http.request(req)
+      begin
+        res = http.request(req)
+      rescue => ex
+        puts ex.message
+        self.telegram_client.api.send_message(
+          chat_id: chat_id,
+          text: "Instagram API key expired, please refresh the `sessionid`"
+        )
+
+        raise "error #{res}"
+      end
       puts res.to_hash["location"]
       if res.code.to_i == 302 && (res.to_hash["location"].first || "").include?("unblock")
         # API key expired
         puts "Instagram API key expired, please refresh the `sessionid` and the `ds_user_id`"
         self.telegram_client.api.send_message(
           chat_id: chat_id,
-          text: "Instagram API key expired (3 months old), please refresh the `sessionid` and `ds_user_id`"
+          text: "Instagram API key expired, please refresh the `sessionid`"
         )
 
         raise "error #{res}"
