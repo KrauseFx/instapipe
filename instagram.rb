@@ -61,6 +61,11 @@ module Instapipe
       #   "username"=>"krausefx",
       #   "permalink"=>"https://instagram.com/stories/krausefx/2900560353990676495",
       #   "id"=>"17870665568746523"}],
+
+      # First check, if we already have that specific story stored
+      if Database.database[:stories].where(ig_id: story["ig_id"]).count > 0
+        return nil
+      end
       new_entry = {}
       
       # First, download the image asset
