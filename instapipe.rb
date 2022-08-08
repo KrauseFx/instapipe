@@ -27,7 +27,7 @@ module Instapipe
       # http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
       # Create Request
-      req =  Net::HTTP::Get.new(uri)
+      req = Net::HTTP::Get.new(uri)
       req.add_field "Cookie", "sessionid=#{self.sessionid}; ds_user_id=#{self.ds_user_id}"
       req.add_field "User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13F69 Instagram 8.4.0 (iPhone7,2; iPhone OS 9_3_2; nb_NO; nb-NO; scale=2.00; 750x1334"
 

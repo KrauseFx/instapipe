@@ -11,12 +11,21 @@ class Database
         String :ig_id
         String :signed_url
         String :bucket_path
-        String :user_id
+
         Integer :height
         Integer :width
         Integer :timestamp
         Boolean :is_video
+
+        # New as of using the official API
+        String :media_product_type
+        String :caption
+        String :permalink
+        String :username
+
+        # Deprecated (those were from the old API)
         String :story_location
+        String :user_id # database reference, not 
       end
     end
 
