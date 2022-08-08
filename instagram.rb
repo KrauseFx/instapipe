@@ -22,23 +22,30 @@ module Instapipe
       puts "Fetching latest stories..."
       uri = URI("https://graph.facebook.com/v14.0/17841401712160068/stories")
       uri.query = URI.encode_www_form(
-        fields: "fields=caption,media_product_type,media_url,ig_id,thumbnail_url,timestamp,username,children,permalink",
+        fields: "caption,media_product_type,media_url,thumbnail_url,timestamp,username,children,permalink,ig_id",
         access_token: self.access_token
       )
       begin
         res = Net::HTTP.get_response(uri)
         parsed = JSON.parse(res.body)
+        if parsed["error"]
+          puts parsed
+          self.telegram_client.api.send_message(
+            chat_id: telegram_chat_id,
+            text: "Instagram API error: #{parsed["error"]["message"]}"
+          )
+          return
+        end
         parsed.fetch("data").each do |story|
           parse_story(story, telegram_chat_id)
         end
       rescue => ex
         puts ex.message
         puts ex.backtrace.join("\n")
-        binding.pry
-        # self.telegram_client.api.send_message(
-        #   chat_id: telegram_chat_id,
-        #   text: "Instagram API error, please investigate"
-        # )
+        self.telegram_client.api.send_message(
+          chat_id: telegram_chat_id,
+          text: "Instagram API error, please investigate"
+        )
 
         raise "error #{res}"
       end
@@ -78,6 +85,8 @@ module Instapipe
         username: story["username"],
         permalink: story["permalink"],
         caption: story["caption"],
+        media_product_type: story["media_product_type"],
+        user_id: self.user_id,
       })
       
       if new_entry["is_video"]
@@ -95,8 +104,7 @@ module Instapipe
       end
 
       extension = new_entry["is_video"] ? ".mp4" : ".jpg"
-      binding.pry
-      output_path = File.join(user_id, "#{new_entry['id']}#{extension}")
+      output_path = File.join(user_id, "#{story['id']}#{extension}")
       puts "uploading file to Google Cloud #{output_path}"
       created_file = Database.file_storage_bucket.create_file(file_path, output_path)
 
