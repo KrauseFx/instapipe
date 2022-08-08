@@ -116,12 +116,9 @@ module Instapipe
       new_entry[:signed_url] = created_file.signed_url(method: "GET", expires: 24 * 60 * 60) # expires in 24h
       new_entry[:bucket_path] = output_path
       
-      binding.pry
       # only after successfully posting it, store in db
       Database.database[:stories].insert(new_entry)
-
-      binding.pry
-      puts 'hi'
+      puts "Completed"
     end
   end
 end
