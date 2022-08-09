@@ -3,6 +3,7 @@ require_relative "./database"
 
 set :bind, '0.0.0.0'
 set :port, ENV.fetch("PORT")
+set :environment, :production unless ENV["DEVELOPMENT"] == true
 
 def time_diff(seconds_diff)
   seconds_diff = seconds_diff.to_i
