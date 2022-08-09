@@ -8,9 +8,11 @@
 <body>
     <div id='content'>
         <h1 style="text-align: center;">instapipe.net</h1>
-        <div id="story-available" class="story-not-available">
-            <img src="https://krausefx.com/assets/FelixKrauseCropped.jpg" id="storyProfilePicture" onclick="showStories()" />
-        </div>
+        <% if @stories_available %>
+            <div id="story-available" class="story-not-available">
+                <img src="https://krausefx.com/assets/FelixKrauseCropped.jpg" id="storyProfilePicture" onclick="showStories()" />
+            </div>
+        <% end %>
         <div id="storyViewer">
             <div id="storyViewerDimmedBackground" onclick="dismissStories()"></div>
             <div id="storyContent">
@@ -446,7 +448,12 @@
                 text-decoration: none;
             }
         </style>
-        <p style="text-align: center;"><b>⬆️ Give it a try, click on the picture ⬆️</b></p>
+        <% if @stories_available %>
+            <p style="text-align: center;"><b>⬆️ Give it a try, click on the picture ⬆️</b></p>
+        <% end %>
+
+        <a href="<%= @login_url %>" class="btn btn-primary">Login to start using Instapipe (this requires a Facebook Business Account)</a>
+
         <style type="text/css">
             #story-available {
                 margin-left: auto;

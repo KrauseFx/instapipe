@@ -1,6 +1,9 @@
 require_relative "./database"
 require "net/https"
 
+# FB Login flow docs
+# https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow
+
 module Instapipe
   class FacebookToken
     attr_accessor :user_id

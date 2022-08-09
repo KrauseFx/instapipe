@@ -8,26 +8,6 @@ set :environment, :production unless ENV["DEVELOPMENT"] == true
 
 REDIRECT_URI = "https://instapipe.net/fb/auth"
 
-def time_diff(seconds_diff)
-  seconds_diff = seconds_diff.to_i
-
-  hours = seconds_diff / 3600
-  seconds_diff -= hours * 3600
-
-  minutes = seconds_diff / 60
-  seconds_diff -= minutes * 60
-
-  if hours > 0
-    return "#{hours}h"
-  elsif minutes > 20
-    return "#{minutes}m"
-  else
-    return "Just now"
-  end
-end
-
-# FB Login flow docs
-# https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow
 get '/' do
   # Render login page
   @login_url = URI("https://www.facebook.com/v14.0/dialog/oauth")
@@ -37,7 +17,13 @@ get '/' do
     state: "instapipe"
   )
   @login_url = @login_url.to_s
-  erb :login
+  active_stories = Database.database[:stories].where(user_id: ENV.fetch("KRAUSEFX_USER_FOR_DEMO")).find_all do |story|
+    relative_diff_in_seconds = (Time.now - Time.at(story[:timestamp]))
+    relative_diff_in_h = relative_diff_in_seconds / 60 / 60
+    relative_diff_in_h <= 24 # only show the most recent stories
+  end
+  @stories_available = active_stories.count > 0
+  erb :index
 end
 
 get "/fb/auth" do
@@ -106,4 +92,22 @@ get "/didOpenStories" do
   existing_entry.update(count: existing_entry.first[:count] + 1)
 
   "Success"
+end
+
+def time_diff(seconds_diff)
+  seconds_diff = seconds_diff.to_i
+
+  hours = seconds_diff / 3600
+  seconds_diff -= hours * 3600
+
+  minutes = seconds_diff / 60
+  seconds_diff -= minutes * 60
+
+  if hours > 0
+    return "#{hours}h"
+  elsif minutes > 20
+    return "#{minutes}m"
+  else
+    return "Just now"
+  end
 end
