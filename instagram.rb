@@ -12,10 +12,44 @@ module Instapipe
     attr_accessor :user_id
     attr_accessor :telegram_client
 
-    def initialize(access_token:, user_id:)
-      self.access_token = access_token
+    def initialize(short_access_token:, user_id:)
+      self.access_token = self.generate_long_lived_access_token(short_access_token, user_id)
       self.user_id = user_id
       self.telegram_client = ::Telegram::Bot::Client.new(ENV["TELEGRAM_TOKEN"])
+    end
+
+    def generate_long_lived_access_token(short_access_token, user_id)
+      existing_tokens = Database.database[:facebook_access_tokens].where(user_id: user_id)
+      if existing_tokens.count > 0
+        existing_token = existing_tokens.first
+        if existing_token[:expires_at] > Time.now
+          return existing_token[:long_lived_access_token]
+        else
+          puts "Existing token expired, generating new one"
+          Database.database[:facebook_access_tokens].where(user_id: user_id).delete
+        end
+      end
+
+      uri = URI("https://graph.facebook.com/v14.0/oauth/access_token")
+      uri.query = URI.encode_www_form( 
+        grant_type: "fb_exchange_token",
+        client_id: ENV.fetch("INSTAGRAM_APP_ID"),
+        client_secret: ENV.fetch("INSTAGRAM_APP_SECRET"),
+        fb_exchange_token: short_access_token
+      )
+      res = Net::HTTP.get_response(uri)
+      parsed = JSON.parse(res.body)
+      if parsed["access_token"]
+        Database.database[:facebook_access_tokens].insert({
+          user_access_token_used: short_access_token,
+          long_lived_access_token: parsed["access_token"],
+          user_id: user_id,
+          expires_at: (Time.now + parsed["expires_in"].to_i)
+        })
+        return parsed["access_token"]
+      else
+        raise "Could not fetch access token: #{parsed}"
+      end
     end
 
     def stories(telegram_chat_id:)
@@ -49,7 +83,6 @@ module Instapipe
 
         raise "error #{res}"
       end
-      puts res
     end
 
     def parse_story(story, telegram_chat_id)
@@ -64,6 +97,7 @@ module Instapipe
 
       # First check, if we already have that specific story stored
       if Database.database[:stories].where(ig_id: story["ig_id"]).count > 0
+        puts "Story with ID #{story["ig_id"]} already stored"
         return nil
       end
       new_entry = {}
@@ -125,8 +159,9 @@ end
 
 if __FILE__ == $0
   instagram = Instapipe::Instagram.new(
-    access_token: ENV.fetch('INSTAGRAM_ACCESS_TOKEN'),
+    short_access_token: ENV.fetch('INSTAGRAM_USER_ACCESS_TOKEN'),
     user_id: ENV.fetch("IG_BUSINESS_USER_ID")
   )
-  puts instagram.stories(telegram_chat_id: ENV["TELEGRAM_CHAT_ID"])
+  instagram.stories(telegram_chat_id: ENV["TELEGRAM_CHAT_ID"])
+  # instagram.posts(telegram_chat_id: ENV["TELEGRAM_CHAT_ID"])
 end

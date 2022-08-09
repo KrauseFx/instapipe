@@ -25,7 +25,7 @@ class Database
 
         # Deprecated (those were from the old API)
         String :story_location
-        String :user_id # database reference, not 
+        String :user_id
       end
     end
 
@@ -35,6 +35,16 @@ class Database
         Date :date
         Integer :prefetches
         Integer :count
+      end
+    end
+
+    unless @_db.table_exists?("facebook_access_tokens")
+      @_db.create_table :facebook_access_tokens do
+        primary_key :id
+        String :user_access_token_used
+        String :long_lived_access_token
+        String :user_id
+        Time :expires_at
       end
     end
 
