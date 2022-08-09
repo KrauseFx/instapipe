@@ -13,8 +13,7 @@ module Instapipe
     attr_accessor :telegram_client
 
     def initialize(fb_token_entry:, user_id:)
-      binding.pry
-      self.access_token = token_entry["long_lived_access_token"]
+      self.access_token = fb_token_entry.fetch(:long_lived_access_token)
       self.user_id = user_id
       self.telegram_client = ::Telegram::Bot::Client.new(ENV["TELEGRAM_TOKEN"])
     end
@@ -131,6 +130,10 @@ if __FILE__ == $0
       fb_token_entry: fb_token
     )
     instagram.stories(telegram_chat_id: ENV["TELEGRAM_CHAT_ID"])
+  rescue => ex
+    puts fb_token
+    puts ex.message
+    puts ex.backtrace.join("\n")
   end
   # instagram.posts(telegram_chat_id: ENV["TELEGRAM_CHAT_ID"])
 end
