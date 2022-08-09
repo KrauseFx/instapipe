@@ -21,7 +21,7 @@ end
 
 get '/stories.json' do
   output = []
-  user_id = params[:user_id]
+  user_id = params.fetch(:user_id)
   Database.database[:stories].where(user_id: user_id).each do |story|
     relative_diff_in_seconds = (Time.now - Time.at(story[:timestamp]))
     relative_diff_in_h = relative_diff_in_seconds / 60 / 60
@@ -42,14 +42,15 @@ get '/stories.json' do
   end
 
   date = Date.today
-  existing_entry = Database.database[:views].where(date: date)
+  existing_entry = Database.database[:views].where(date: date, user_id: user_id)
   if existing_entry.count == 0
     Database.database[:views].insert({
       date: date,
       count: 0,
-      prefetches: 0
+      prefetches: 0,
+      user_id: user_id
     })
-    existing_entry = Database.database[:views].where(date: date)
+    existing_entry = Database.database[:views].where(date: date, user_id: user_id)
   end
 
   existing_entry.update(
@@ -65,10 +66,11 @@ end
 
 get "/didOpenStories" do
   date = Date.today
+  user_id = params.fetch(:user_id)
 
   headers('Access-Control-Allow-Origin' => "*")
 
-  existing_entry = Database.database[:views].where(date: date)
+  existing_entry = Database.database[:views].where(date: date, user_id: user_id)
   existing_entry.update(count: existing_entry.first[:count] + 1)
 
   "Success"

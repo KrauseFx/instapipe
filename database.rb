@@ -35,6 +35,7 @@ class Database
         Date :date
         Integer :prefetches
         Integer :count
+        String :user_id
       end
     end
 
