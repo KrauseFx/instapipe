@@ -49,6 +49,14 @@ class Database
       end
     end
 
+    unless @_db.table_exists?("telegram_chat_ids")
+      @_db.create_table :telegram_chat_ids do
+        primary_key :id
+        String :user_id
+        String :telegram_chat_id
+      end
+    end
+
     return @_db
   end
 

@@ -12,14 +12,15 @@ module Instapipe
     attr_accessor :user_id
     attr_accessor :telegram_client
 
-    def initialize(fb_token_entry:, user_id:)
+    def initialize(fb_token_entry:)
       self.access_token = fb_token_entry.fetch(:long_lived_access_token)
-      self.user_id = user_id
+      self.user_id = fb_token_entry.fetch(:user_id)
       self.telegram_client = ::Telegram::Bot::Client.new(ENV["TELEGRAM_TOKEN"])
     end
 
     def stories(telegram_chat_id:)
       puts "Fetching latest stories..."
+      puts "No Telegram Chat ID provided for user #{user_id}" unless telegram_chat_id
       uri = URI("https://graph.facebook.com/v14.0/17841401712160068/stories")
       uri.query = URI.encode_www_form(
         fields: "caption,media_product_type,media_url,thumbnail_url,timestamp,username,children,permalink,ig_id",
@@ -33,7 +34,7 @@ module Instapipe
           self.telegram_client.api.send_message(
             chat_id: telegram_chat_id,
             text: "Instagram API error: #{parsed["error"]["message"]}"
-          )
+          ) if telegram_chat_id
           return
         end
         parsed.fetch("data").each do |story|
@@ -45,7 +46,7 @@ module Instapipe
         self.telegram_client.api.send_message(
           chat_id: telegram_chat_id,
           text: "Instagram API error, please investigate"
-        )
+        ) if telegram_chat_id
 
         raise "error #{res}"
       end
@@ -100,12 +101,12 @@ module Instapipe
         self.telegram_client.api.send_video(
           chat_id: telegram_chat_id,
           video: Faraday::UploadIO.new(file_path, 'video/mp4')
-        )
+        ) if telegram_chat_id
       else 
         self.telegram_client.api.send_photo(
           chat_id: telegram_chat_id,
           photo: Faraday::UploadIO.new(file_path, 'image/jpg')
-        )
+        ) if telegram_chat_id
       end
 
       extension = new_entry["is_video"] ? ".mp4" : ".jpg"
@@ -125,11 +126,9 @@ end
 
 if __FILE__ == $0
   Database.database[:facebook_access_tokens].each do |fb_token|
-    instagram = Instapipe::Instagram.new(
-      user_id: ENV.fetch("IG_BUSINESS_USER_ID"),
-      fb_token_entry: fb_token
-    )
-    instagram.stories(telegram_chat_id: ENV["TELEGRAM_CHAT_ID"])
+    instagram = Instapipe::Instagram.new(fb_token_entry: fb_token)
+    matching_telegram_groups = Database.database[:telegram_chat_ids].where(user_id: fb_token[:user_id])
+    instagram.stories(telegram_chat_id: (matching_telegram_groups.first[:telegram_chat_id] rescue nil))
   rescue => ex
     puts fb_token
     puts ex.message
