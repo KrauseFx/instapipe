@@ -33,12 +33,11 @@ get '/stories.json' do
       signed_url: story[:signed_url],
       timestamp: story[:timestamp],
       is_video: story[:is_video],
-      height: story[:height],
-      width: story[:width],
+      caption: story[:caption],
+      permalink: story[:permalink],
       relative_diff_in_h: relative_diff_in_h,
       formatted_time_diff: formatted_time_diff,
-      location: JSON.parse(story[:location] || "{}"),
-      user_id: user_id
+      user_id: user_id,
     }
   end
 
