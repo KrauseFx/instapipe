@@ -1,9 +1,12 @@
 require 'sinatra'
 require_relative "./database"
+require_relative "./facebook_token"
 
 set :bind, '0.0.0.0'
 set :port, ENV.fetch("PORT")
 set :environment, :production unless ENV["DEVELOPMENT"] == true
+
+REDIRECT_URI = "https://instapipe.net/fb/auth"
 
 def time_diff(seconds_diff)
   seconds_diff = seconds_diff.to_i
@@ -21,6 +24,31 @@ def time_diff(seconds_diff)
   else
     return "Just now"
   end
+end
+
+# FB Login flow docs
+# https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow
+get '/' do
+  # Render login page
+  @login_url = URI("https://www.facebook.com/v14.0/dialog/oauth")
+  @login_url.query = URI.encode_www_form(
+    client_id: ENV.fetch("INSTAGRAM_APP_ID"),
+    redirect_uri: REDIRECT_URI,
+    state: "instapipe"
+  )
+  @login_url = @login_url.to_s
+  erb :login
+end
+
+get "/fb/auth" do
+  puts "Got auth code /fb/auth"
+  code = params.fetch("code")
+
+  fb_token = Instapipe::FacebookToken.new
+  fb_token.new_login_flow(code: code)
+
+  # Render success page
+  return "Success, from now on we will follow your stories"
 end
 
 get '/stories.json' do
