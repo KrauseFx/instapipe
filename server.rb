@@ -17,7 +17,8 @@ get '/' do
     state: "instapipe"
   )
   @login_url = @login_url.to_s
-  active_stories = Database.database[:stories].where(user_id: ENV.fetch("KRAUSEFX_USER_FOR_DEMO")).find_all do |story|
+  @krausefx_user_id = ENV.fetch("KRAUSEFX_USER_FOR_DEMO")
+  active_stories = Database.database[:stories].where(user_id: @krausefx_user_id).find_all do |story|
     relative_diff_in_seconds = (Time.now - Time.at(story[:timestamp]))
     relative_diff_in_h = relative_diff_in_seconds / 60 / 60
     relative_diff_in_h <= 24 # only show the most recent stories

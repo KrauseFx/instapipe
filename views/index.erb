@@ -37,8 +37,8 @@
             <img src="" id="fakeContentToPreloadImages" />
         </div>
         <script type='text/javascript'>
-            let host = "https://instapipe.herokuapp.com/"
-            let userId = "4409072"
+            let host = "https://instapipe.net/"
+            let userId = "<%= @krausefx_user_id %>"
 
             var storiesToShow = null;
             var timeOutForPhotos = 4.0;
@@ -502,11 +502,9 @@
         <h3 id="telegram-group">Telegram group</h3>
         <p>Many of my friends don't want to check Instagram every day, but still want to stay up to date with what I'm up to. Since they all use Telegram already, I set up a channel that automatically shows the stories I post.</p>
         <p>
-            <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">
-                <img src="assets/telegramScreenshot.jpg" />
-            </a>
+            <img src="assets/telegramScreenshot.jpg" />
         </p>
-        <p>A <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">Telegram group</a> containing all my latest stories. In particular nice to get an overview over all your most recent stories. Join it <a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">here</a>.</p>
+        <p>A Telegram group containing all my latest stories. In particular nice to get an overview over all your most recent stories.</p>
         <h2 id="how-it-works">How it works</h2>
         <p>Instapipe is a simple server, that periodically fetches your most recent Instagram stories. As soon as a new story is available, it will</p>
         <ul>
@@ -524,7 +522,7 @@
                     <li><code>lat</code> and <code>lng</code> coordinates</li>
                 </ul>
             </li>
-            <li>Post the new story into a Telegram group (<a href="https://t.me/joinchat/AAAAAFADGfZcXqQj3TK73A">check it out here</a>)</li>
+            <li>Post the new story into a Telegram group</li>
         </ul>
         <p><img src="assets/databaseScreenshot.jpg" /></p>
         <p>At the same time, some very basic metrics will be stored:</p>
