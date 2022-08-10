@@ -116,7 +116,7 @@
 
                 var xmlHttp = new XMLHttpRequest();
                 xmlHttp.onreadystatechange = function() {}
-                xmlHttp.open("GET", host + "didOpenStories", true); // true = asynchronous 
+                xmlHttp.open("GET", host + "didOpenStories?user_id=" + userId, true); // true = asynchronous 
                 xmlHttp.send(null);
             }
 
@@ -499,7 +499,6 @@
         <h3 id="provide-a-json-api">Provide a JSON API</h3>
         <p>Of course it also provides you with a JSON API, that can be used to integrate your Instagram stories into any app or service. The API includes all relevant data, including the raw image, location and the exact resolution of the media assets.</p>
         <p><img src="assets/apiScreenshot.jpg" /></p>
-        <p><a href="https://instapipe.herokuapp.com/stories.json?user_id=4409072">https://instapipe.herokuapp.com/stories.json?user_id=4409072</a></p>
         <p>Make sure to manually copy &amp; paste this in a new tab to avoid the cross-site scripting protection</p>
         <h3 id="telegram-group">Telegram group</h3>
         <p>Many of my friends don't want to check Instagram every day, but still want to stay up to date with what I'm up to. Since they all use Telegram already, I set up a channel that automatically shows the stories I post.</p>
