@@ -37,7 +37,7 @@ module Instapipe
           ) if telegram_chat_id
           return
         end
-        parsed.fetch("data").each do |story|
+        parsed.fetch("data").sort_by { |story| story["timestamp"] }.each do |story|
           parse_story(story, telegram_chat_id)
         end
       rescue => ex
