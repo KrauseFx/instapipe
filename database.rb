@@ -11,9 +11,8 @@ class Database
         String :ig_id
         String :signed_url
         String :bucket_path
+        String :user_id
 
-        Integer :height
-        Integer :width
         Integer :timestamp
         Boolean :is_video
 
@@ -22,10 +21,29 @@ class Database
         String :caption
         String :permalink
         String :username
+      end
+    end
 
-        # Deprecated (those were from the old API)
-        String :story_location
+    unless @_db.table_exists?("posts")
+      @_db.create_table :posts do
+        # Post itself
+        primary_key :id
+        String :ig_id
+        String :media_product_type
+        String :caption
+        String :permalink
+        String :username
+        Integer :timestamp
         String :user_id
+
+        # Media entry
+        Boolean :is_video
+        String :signed_url
+        String :bucket_path
+        String :node_id
+        String :node_ig_id
+
+        unique [:ig_id, :node_id]
       end
     end
 
