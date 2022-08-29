@@ -143,10 +143,7 @@ module Instapipe
         images_to_parse = post["children"]["data"]
       else
         # same keys, but on the top level of the node
-        require 'pry'
-        binding.pry
-        images_to_parse = post 
-        return # TODO: Just for now
+        images_to_parse = [post]
       end
 
       base_entry = {
@@ -160,6 +157,8 @@ module Instapipe
       }
       entries_to_post_to_telegram = []
       images_to_parse.each do |node|
+        next if Database.database[:posts].where(ig_id: post["ig_id"], node_ig_id: node["ig_id"]).count == 1
+
         res = download_and_store_asset(
           ig_id: node["ig_id"],
           file_name_to_use: [post["id"], node["id"]].join("-"),
@@ -174,21 +173,38 @@ module Instapipe
           node_id: node["id"],
           node_ig_id: node["ig_id"]
         )
-        if Database.database[:posts].where(ig_id: new_entry[:ig_id], node_ig_id: new_entry[:node_ig_id]).count == 0
-          Database.database[:posts].insert(new_entry)
-        end
+        Database.database[:posts].insert(new_entry)
         entries_to_post_to_telegram << new_entry
       end
 
-      telegram_media_entries = entries_to_post_to_telegram.collect do |entry|
-        Telegram::Bot::Types::InputMediaPhoto.new(media: entry[:signed_url]) # Telegram can easily access URLs directly
-      end.compact
-      telegram_media_entries[0][:caption] = base_entry[:caption] # as per https://stackoverflow.com/questions/58893142/how-to-send-telegram-mediagroup-with-caption-text
-      puts "Uploading new post to Telegram"
-      self.telegram_client.api.send_media_group(
-        chat_id: telegram_chat_id,
-        media: telegram_media_entries,
-      )
+      begin
+        telegram_media_entries = entries_to_post_to_telegram.collect do |entry|
+          sleep(0.1) # seems like this might be needed
+          Telegram::Bot::Types::InputMediaPhoto.new(
+            media: entry[:signed_url], # Telegram can easily access URLs directly
+            type: entry[:is_video] ? "video" : "photo",
+          ) 
+        end.compact
+        sleep(3)
+        if telegram_media_entries.count > 0
+          telegram_media_entries[0][:caption] = base_entry[:caption] # as per https://stackoverflow.com/questions/58893142/how-to-send-telegram-mediagroup-with-caption-text
+          puts "Uploading new post to Telegram"
+          self.telegram_client.api.send_media_group(
+            chat_id: telegram_chat_id,
+            media: telegram_media_entries,
+          )
+        end
+      rescue => ex
+        # Now delete the db entries again
+        Database.database[:posts].where(ig_id: base_entry[:ig_id]).delete
+        puts ex.message
+        puts ex.backtrace.join("\n")
+        # Send message to Telegram
+        self.telegram_client.api.send_message(
+          chat_id: telegram_chat_id,
+          text: "Instagram API error, please investigate"
+        )
+      end
     end
 
     def download_and_store_asset(ig_id:, file_name_to_use:, media_url:, expires:, prefix_folder:)
