@@ -176,14 +176,14 @@ module Instapipe
 
       begin
         telegram_media_entries = entries_to_post_to_telegram.collect do |entry|
-          sleep(0.1) # seems like this might be needed
+          sleep(3) # Telegram does some annoying rate limiting
           Telegram::Bot::Types::InputMediaPhoto.new(
             media: entry[:signed_url], # Telegram can easily access URLs directly
             type: entry[:is_video] ? "video" : "photo",
           ) 
         end.compact
-        sleep(3)
-        if telegram_media_entries.count > 0
+        sleep(10)
+        if telegram_media_entries.count > 0 && !ENV["SKIP_TELEGRAM_FOR_POSTS"]
           telegram_media_entries[0][:caption] = base_entry[:caption] # as per https://stackoverflow.com/questions/58893142/how-to-send-telegram-mediagroup-with-caption-text
           puts "Uploading new post to Telegram"
           self.telegram_client.api.send_media_group(
