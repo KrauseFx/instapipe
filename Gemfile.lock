@@ -119,7 +119,6 @@ DEPENDENCIES
   marcel
   pg
   pry
-  rake
   sequel
   sinatra
   telegram-bot-ruby
