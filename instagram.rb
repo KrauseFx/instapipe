@@ -1,4 +1,5 @@
 require 'net/http'
+require 'mimemagic'
 require 'net/https'
 require 'open-uri'
 require 'pry'
@@ -74,13 +75,13 @@ module Instapipe
       File.write(file_path, URI.open(story["media_url"]).read)
 
       # Detect if it's a video or photo that was posted
-      file_type = `file -I #{file_path}`
+      file_type = MimeMagic.by_magic(File.open(file_path)).type # => "image/jpeg" 
       if file_type.include?("image/jpeg")
         new_entry["is_video"] = false
       elsif file_type.include?("video/mp4")
         new_entry["is_video"] = true
       else
-        puts "Unknown file type #{file_type}: file_type"
+        puts "Unknown file type #{file_type}"
         binding.pry
       end
 

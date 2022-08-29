@@ -6,7 +6,8 @@ gem "sequel"
 gem "rake"
 gem "google-cloud-storage"
 gem "sinatra"
-gem "bundle"
+gem "bundler"
+gem "mimemagic"
 
 # Messengers
 gem "telegram-bot-ruby" # telegram
