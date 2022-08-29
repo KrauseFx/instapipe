@@ -156,7 +156,7 @@ module Instapipe
         ig_id: post["ig_id"]
       }
       entries_to_post_to_telegram = []
-      images_to_parse.each do |node|
+      images_to_parse.each_with_index do |node, index|
         next if Database.database[:posts].where(ig_id: post["ig_id"], node_ig_id: node["ig_id"]).count == 1
 
         res = download_and_store_asset(
@@ -171,7 +171,8 @@ module Instapipe
           signed_url: res[:signed_url],
           bucket_path: res[:output_path],
           node_id: node["id"],
-          node_ig_id: node["ig_id"]
+          node_ig_id: node["ig_id"],
+          index: index
         )
         Database.database[:posts].insert(new_entry)
         entries_to_post_to_telegram << new_entry

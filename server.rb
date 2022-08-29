@@ -103,7 +103,7 @@ get '/posts.json' do
       caption: post[:caption],
       permalink: post[:permalink],
       user_id: user_id,
-      media: all_media_items.collect do |media_item| # TODO: sort by index
+      media: all_media_items.sort_by { |a| a[:index] }.collect do |media_item| # TODO: sort by index
         {
           signed_url: media_item[:signed_url],
           is_video: media_item[:is_video],
