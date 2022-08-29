@@ -72,8 +72,7 @@ module Instapipe
           ) if telegram_chat_id
           return
         end
-        # TODO: remove the reverse
-        parsed.fetch("data").sort_by { |post| post["timestamp"] }.reverse.each do |post| # starting with the oldest
+        parsed.fetch("data").sort_by { |post| post["timestamp"] }.each do |post| # starting with the oldest
           parse_post(post, telegram_chat_id)
         end
       rescue => ex
