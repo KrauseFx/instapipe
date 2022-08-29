@@ -89,12 +89,15 @@ get '/posts.json' do
   all_posts_ig_ids = Database.database[:posts].where(user_id: user_id).order_by(:ig_id).to_a.collect { |a| a[:ig_id] }.uniq
 
   output = all_posts_ig_ids.collect do |ig_id|
-    all_media_items = Database.database[:posts].where(user_id: user_id, ig_id: ig_id)
+    all_media_items = Database.database[:posts].where(user_id: user_id, ig_id: ig_id).order_by(:index)
     post = all_media_items.first
     relative_diff_in_seconds = (Time.now - Time.at(post[:timestamp]))
     relative_diff_in_h = relative_diff_in_seconds / 60 / 60
 
     formatted_time_diff = time_diff(relative_diff_in_seconds)    
+    thumbnail_url = all_media_items.find_all do |media_item|
+      media_item[:is_video] == false
+    end.first.fetch(:signed_url, nil)
 
     {
       relative_diff_in_h: relative_diff_in_h,
@@ -103,7 +106,8 @@ get '/posts.json' do
       caption: post[:caption],
       permalink: post[:permalink],
       user_id: user_id,
-      media: all_media_items.sort_by { |a| a[:index] }.collect do |media_item|
+      thumbnail_url: thumbnail_url,
+      media: all_media_items.collect do |media_item|
         {
           signed_url: media_item[:signed_url],
           is_video: media_item[:is_video],
