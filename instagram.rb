@@ -1,5 +1,5 @@
 require 'net/http'
-require 'mimemagic'
+require 'marcel'
 require 'net/https'
 require 'open-uri'
 require 'pry'
