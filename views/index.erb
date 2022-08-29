@@ -13,6 +13,9 @@
             <div id="story-available" class="story-not-available">
                 <img src="https://krausefx.com/assets/FelixKrauseCropped.jpg" id="storyProfilePicture" onclick="showStories()" />
             </div>
+            <div>
+                <h2 style="text-align: center;" id="username"><a href="https://instagram.com/KrauseFx">@KrauseFx</a></h2>
+            </div>
         <% end %>
         <div id="storyViewer">
             <div id="storyViewerDimmedBackground" onclick="dismissStories()"></div>
@@ -30,13 +33,50 @@
                     &#x3E;
                 </div>
 
-                <video autoplay playsinline muted id="storyVideoViewer">
-    </video>
+                <video autoplay playsinline muted id="storyVideoViewer"></video>
                 <div id="storyPhotoViewer" onclick="userDidClickNextStory()">
                 </div>
             </div>
             <img src="" id="fakeContentToPreloadImages" />
         </div>
+        
+        <%# Render the grid %>
+        <div id="grid">
+            <% @posts.each do |post| %>
+                <div class="post">
+                    <a href="<%= post[:permalink] %>" target="_blank">
+                        <img src="<%= post[:thumbnail_url] %>" />
+                    </a>
+                </div>
+            <% end %>
+        </div>
+        <%# Grid's CSS %>
+        <style type="text/css">
+            /* The grid below is Instagram-like, 3 columns  */
+            #grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-gap: 10px;
+                padding: 10px;
+            }
+            #grid > .post {
+                background: #fff;
+                border-radius: 5px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                aspect-ratio: 1;
+            }
+            /* Images must be square, and fill the container */
+            #grid img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            #username > a {
+                color: #333 !important;
+            }
+        </style>
+
         <script type='text/javascript'>
             let host = "https://instapipe.net/"
             let userId = "<%= @krausefx_user_id %>"

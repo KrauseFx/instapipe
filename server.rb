@@ -4,7 +4,7 @@ require_relative "./facebook_token"
 
 set :bind, '0.0.0.0'
 set :port, ENV.fetch("PORT")
-set :environment, :production unless ENV["DEVELOPMENT"] == true
+set :environment, :production unless ENV["DEVELOPMENT"].to_s.length > 0
 
 REDIRECT_URI = "https://instapipe.net/fb/auth"
 
@@ -24,6 +24,9 @@ get '/' do
     relative_diff_in_h <= 24 # only show the most recent stories
   end
   @stories_available = active_stories.count > 0
+
+  @posts = posts_json(@krausefx_user_id)
+
   erb :index
 end
 
@@ -83,12 +86,10 @@ get '/stories.json' do
   output.to_json
 end
 
-get '/posts.json' do
-  user_id = params.fetch(:user_id)
-
+def posts_json(user_id)
   all_posts_ig_ids = Database.database[:posts].where(user_id: user_id).order_by(:ig_id).to_a.collect { |a| a[:ig_id] }.uniq
 
-  output = all_posts_ig_ids.collect do |ig_id|
+  return all_posts_ig_ids.collect do |ig_id|
     all_media_items = Database.database[:posts].where(user_id: user_id, ig_id: ig_id).order_by(:index)
     post = all_media_items.first
     relative_diff_in_seconds = (Time.now - Time.at(post[:timestamp]))
@@ -118,11 +119,13 @@ get '/posts.json' do
       end
     }
   end.sort_by { |a| a[:timestamp] }.reverse
+end
 
+get '/posts.json' do
   headers('Access-Control-Allow-Origin' => "*")
   content_type('application/json')
 
-  output.to_json
+  posts_json(params.fetch(:user_id)).to_json
 end
 
 get "/didOpenStories" do

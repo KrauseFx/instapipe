@@ -21,7 +21,7 @@ bundle exec ruby scheduler.rb
 ## Environment variables
 
 ```
-<!-- TODO: UPdate -->
+<!-- TODO: Update -->
 ```
 
 
