@@ -96,7 +96,6 @@ module Instapipe
       })
       
       if new_entry["is_video"]
-        # TODO
         puts "Uploading video... this might take a little longer"
         self.telegram_client.api.send_video(
           chat_id: telegram_chat_id,
@@ -124,7 +123,7 @@ module Instapipe
   end
 end
 
-if __FILE__ == $0
+def refresh_stories
   Database.database[:facebook_access_tokens].each do |fb_token|
     instagram = Instapipe::Instagram.new(fb_token_entry: fb_token)
     matching_telegram_groups = Database.database[:telegram_chat_ids].where(user_id: fb_token[:user_id])
@@ -134,5 +133,9 @@ if __FILE__ == $0
     puts ex.message
     puts ex.backtrace.join("\n")
   end
+end
+
+if __FILE__ == $0
+  refresh_stories
   # instagram.posts(telegram_chat_id: ENV["TELEGRAM_CHAT_ID"])
 end
