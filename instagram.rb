@@ -85,9 +85,6 @@ module Instapipe
 
         raise "error #{res}"
       end
-
-      require 'pry'
-      binding.pry
     end
 
     def parse_story(story, telegram_chat_id)
@@ -243,7 +240,7 @@ def refresh_stories_and_posts
   Database.database[:facebook_access_tokens].each do |fb_token|
     instagram = Instapipe::Instagram.new(fb_token_entry: fb_token)
     matching_telegram_groups = Database.database[:telegram_chat_ids].where(user_id: fb_token[:user_id])
-    # instagram.stories(telegram_chat_id: (matching_telegram_groups.first[:telegram_chat_id] rescue nil))
+    instagram.stories(telegram_chat_id: (matching_telegram_groups.first[:telegram_chat_id] rescue nil))
     instagram.posts(telegram_chat_id: (matching_telegram_groups.first[:telegram_chat_id] rescue nil))
   rescue => ex
     puts fb_token
