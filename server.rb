@@ -107,11 +107,13 @@ get '/posts.json' do
       permalink: post[:permalink],
       user_id: user_id,
       thumbnail_url: thumbnail_url,
+      ig_id: ig_id,
       media: all_media_items.collect do |media_item|
         {
           signed_url: media_item[:signed_url],
           is_video: media_item[:is_video],
-          index: media_item[:index]
+          index: media_item[:index],
+          ig_id: media_item[:ig_id]
         }
       end
     }
