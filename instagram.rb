@@ -75,7 +75,8 @@ module Instapipe
       File.write(file_path, URI.open(story["media_url"]).read)
 
       # Detect if it's a video or photo that was posted
-      file_type = MimeMagic.by_magic(File.open(file_path)).type # => "image/jpeg" 
+      file_type = Marcel::MimeType.for(Pathname.new(file_path))
+
       if file_type.include?("image/jpeg")
         new_entry["is_video"] = false
       elsif file_type.include?("video/mp4")
