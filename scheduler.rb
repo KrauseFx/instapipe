@@ -1,5 +1,3 @@
-# Use this file to easily define all of your cron jobs.
-#
 require_relative "./instagram.rb"
 puts "Starting cronjob"
 
