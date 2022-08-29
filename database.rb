@@ -42,6 +42,7 @@ class Database
         String :bucket_path
         String :node_id
         String :node_ig_id
+        Integer :index
 
         unique [:ig_id, :node_id]
       end

@@ -83,6 +83,42 @@ get '/stories.json' do
   output.to_json
 end
 
+get '/posts.json' do
+  user_id = params.fetch(:user_id)
+
+  all_posts_ig_ids = Database.database[:posts].where(user_id: user_id).order_by(:ig_id).to_a.collect { |a| a[:ig_id] }.uniq
+
+  output = all_posts_ig_ids.collect do |ig_id|
+    all_media_items = Database.database[:posts].where(user_id: user_id, ig_id: ig_id)
+    post = all_media_items.first
+    relative_diff_in_seconds = (Time.now - Time.at(post[:timestamp]))
+    relative_diff_in_h = relative_diff_in_seconds / 60 / 60
+
+    formatted_time_diff = time_diff(relative_diff_in_seconds)    
+
+    {
+      relative_diff_in_h: relative_diff_in_h,
+      formatted_time_diff: formatted_time_diff,
+      timestamp: post[:timestamp],
+      caption: post[:caption],
+      permalink: post[:permalink],
+      user_id: user_id,
+      media: all_media_items.collect do |media_item| # TODO: sort by index
+        {
+          signed_url: media_item[:signed_url],
+          is_video: media_item[:is_video],
+          index: media_item[:index]
+        }
+      end
+    }
+  end.sort_by { |a| a[:timestamp] }.reverse
+
+  headers('Access-Control-Allow-Origin' => "*")
+  content_type('application/json')
+
+  output.to_json
+end
+
 get "/didOpenStories" do
   date = Date.today
   user_id = params.fetch(:user_id)
