@@ -15,7 +15,7 @@ bundle exec ruby server.rb
 ## Scheduler
 
 ```
-bundle exec rake telegram
+bundle exec ruby scheduler.rb
 ```
 
 ## Environment variables
