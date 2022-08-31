@@ -510,12 +510,11 @@
         <h2 id="background">Background</h2>
         <p>You want to share experiences as they are happening in your life. Instagram Stories is a great way to do so, thanks to cross-posting to Facebook, Messenger and Instagram itself, allowing most people to view your stories.</p>
         <p>However just like Snapchat, the platforms try to lock you in, with the content <strong>you</strong> create. Many of my family members and close friends don't use FB/IG daily, but still wanted to stay up to date on what I'm up to.</p>
-        <p>Due to lack of an official API, and any kinds of integrations, the only way to access your stories is through the unofficial API the Instagram mobile- and web client use.</p>
         <h2 id="solution">Solution</h2>
         <p>
             <a  target="_blank" href="https://twitter.com/KrauseFx"><img src="https://img.shields.io/badge/author-@KrauseFx-blue.svg?style=flat" alt="" /></a>
         </p>
-        <p>A simple web service that automatically downloads and publishes your stories on various platforms. It's open source and fully self hosted, check it out <a target="_blank" href="https://github.com/KrauseFx/instapipe">on GitHub</a>.</p>
+        <p>A simple web service that automatically downloads and publishes your stories on various platforms. It's open source and can be self hosted, check it out <a target="_blank" href="https://github.com/KrauseFx/instapipe">on GitHub</a>.</p>
         <h3 id="embed-into-websites">Embed into websites</h3>
         <p>
             <a target="_blank" href="https://howisfelix.today">
@@ -530,6 +529,7 @@
         </ul>
         <p><strong>Features</strong></p>
         <ul>
+            <li>Access your Instagram Stories and Posts</li>
             <li>Design similar to instagram.com web</li>
             <li>Arrow keys to go back and forth between stories</li>
             <li>Support for photos and videos</li>
@@ -540,7 +540,7 @@
             <li>Zero dependencies, plain JavaScript, CSS and HTML in a single file</li>
         </ul>
         <h3 id="provide-a-json-api">Provide a JSON API</h3>
-        <p>Of course it also provides you with a JSON API, that can be used to integrate your Instagram stories into any app or service. The API includes all relevant data, including the raw image, location and the exact resolution of the media assets.</p>
+        <p>Of course it also provides you with a JSON API, that can be used to integrate your Instagram stories into any app or service. The API includes all relevant metadata, including the caption (any tags) as a string.</p>
         <p><img src="assets/apiScreenshot.jpg" /></p>
         <p>Make sure to manually copy &amp; paste this in a new tab to avoid the cross-site scripting protection</p>
         <h3 id="telegram-group">Telegram group</h3>
