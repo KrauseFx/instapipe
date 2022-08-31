@@ -87,10 +87,11 @@ get '/stories.json' do
 end
 
 def posts_json(user_id)
-  all_posts_ig_ids = Database.database[:posts].where(user_id: user_id).order_by(:ig_id).to_a.collect { |a| a[:ig_id] }.uniq
+  all_posts = Database.database[:posts].where(user_id: user_id).order_by(:timestamp).reverse.to_a
+  all_posts_ig_ids = all_posts.collect { |a| a[:ig_id] }.uniq
 
   return all_posts_ig_ids.collect do |ig_id|
-    all_media_items = Database.database[:posts].where(user_id: user_id, ig_id: ig_id).order_by(:index)
+    all_media_items = all_posts.find_all { |a| a[:ig_id] == ig_id }.sort_by { |a| a[:index] }
     post = all_media_items.first
     relative_diff_in_seconds = (Time.now - Time.at(post[:timestamp]))
     relative_diff_in_h = relative_diff_in_seconds / 60 / 60
