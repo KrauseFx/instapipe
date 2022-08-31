@@ -16,15 +16,10 @@ get '/' do
     redirect_uri: REDIRECT_URI,
     state: "instapipe"
   )
+
   @login_url = @login_url.to_s
   @krausefx_user_id = ENV.fetch("KRAUSEFX_USER_FOR_DEMO")
-  active_stories = Database.database[:stories].where(user_id: @krausefx_user_id).find_all do |story|
-    relative_diff_in_seconds = (Time.now - Time.at(story[:timestamp]))
-    relative_diff_in_h = relative_diff_in_seconds / 60 / 60
-    relative_diff_in_h <= 24 # only show the most recent stories
-  end
-  @stories_available = active_stories.count > 0
-
+  @stories = stories_json(@krausefx_user_id)
   @posts = posts_json(@krausefx_user_id)
 
   erb :index
@@ -44,24 +39,8 @@ end
 get '/stories.json' do
   output = []
   user_id = params.fetch(:user_id)
-  Database.database[:stories].where(user_id: user_id).each do |story|
-    relative_diff_in_seconds = (Time.now - Time.at(story[:timestamp]))
-    relative_diff_in_h = relative_diff_in_seconds / 60 / 60
-    next if relative_diff_in_h > 24 # only show the most recent stories
-
-    formatted_time_diff = time_diff(relative_diff_in_seconds)
-
-    output << {
-      signed_url: story[:signed_url],
-      timestamp: story[:timestamp],
-      is_video: story[:is_video],
-      caption: story[:caption],
-      permalink: story[:permalink],
-      relative_diff_in_h: relative_diff_in_h,
-      formatted_time_diff: formatted_time_diff,
-      user_id: user_id,
-    }
-  end
+  
+  output = stories_json(user_id)
 
   date = Date.today
   existing_entry = Database.database[:views].where(date: date, user_id: user_id)
@@ -86,6 +65,46 @@ get '/stories.json' do
   output.to_json
 end
 
+get '/posts.json' do
+  headers('Access-Control-Allow-Origin' => "*")
+  content_type('application/json')
+
+  posts_json(params.fetch(:user_id)).to_json
+end
+
+get "/didOpenStories" do
+  date = Date.today
+  user_id = params.fetch(:user_id)
+
+  headers('Access-Control-Allow-Origin' => "*")
+
+  existing_entry = Database.database[:views].where(date: date, user_id: user_id)
+  existing_entry.update(count: existing_entry.first[:count] + 1)
+
+  "Success"
+end
+# Helpers
+
+def stories_json(user_id)
+  return Database.database[:stories].where(user_id: user_id).collect do |story|
+    relative_diff_in_seconds = (Time.now - Time.at(story[:timestamp]))
+    relative_diff_in_h = relative_diff_in_seconds / 60 / 60
+    next if relative_diff_in_h > 24 # only show the most recent stories
+
+    formatted_time_diff = time_diff(relative_diff_in_seconds)
+
+    {
+      signed_url: story[:signed_url],
+      timestamp: story[:timestamp],
+      is_video: story[:is_video],
+      caption: story[:caption],
+      permalink: story[:permalink],
+      relative_diff_in_h: relative_diff_in_h,
+      formatted_time_diff: formatted_time_diff,
+      user_id: user_id,
+    }
+  end.compact
+end
 def posts_json(user_id)
   all_posts = Database.database[:posts].where(user_id: user_id).order_by(:timestamp).reverse.to_a
   all_posts_ig_ids = all_posts.collect { |a| a[:ig_id] }.uniq
@@ -120,25 +139,6 @@ def posts_json(user_id)
       end
     }
   end.sort_by { |a| a[:timestamp] }.reverse
-end
-
-get '/posts.json' do
-  headers('Access-Control-Allow-Origin' => "*")
-  content_type('application/json')
-
-  posts_json(params.fetch(:user_id)).to_json
-end
-
-get "/didOpenStories" do
-  date = Date.today
-  user_id = params.fetch(:user_id)
-
-  headers('Access-Control-Allow-Origin' => "*")
-
-  existing_entry = Database.database[:views].where(date: date, user_id: user_id)
-  existing_entry.update(count: existing_entry.first[:count] + 1)
-
-  "Success"
 end
 
 def time_diff(seconds_diff)
