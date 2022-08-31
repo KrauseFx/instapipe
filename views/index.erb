@@ -14,7 +14,7 @@
                 <img src="https://krausefx.com/assets/FelixKrauseCropped.jpg" id="storyProfilePicture" onclick="showStories()" />
             </div>
             <div>
-                <h2 style="text-align: center;" id="username"><a href="https://instagram.com/KrauseFx">@KrauseFx</a></h2>
+                <h2 style="text-align: center;" id="username"><a target="_blank" href="https://instagram.com/KrauseFx">@KrauseFx</a></h2>
             </div>
         <% end %>
         <div id="storyViewer">
@@ -22,9 +22,9 @@
             <div id="storyContent">
                 <div id="storyHeader">
                     <img id="storyHeaderProfilePicture" onclick="window.open('https://instagram.com/krausefx', '_blank')" />
-                    <p id="storyUserlink"><a href="https://instagram.com/krausefx" target="_blank">KrauseFx</a></p>
+                    <p id="storyUserlink"><a target="_blank" href="https://instagram.com/krausefx" target="_blank">KrauseFx</a></p>
                     <p id="storyTimestamp"></p>
-                    <p id="poweredByInstapipe"><a href="https://instapipe.net" target="_blank">instapipe.net</a></p>
+                    <p id="poweredByInstapipe"><a target="_blank" href="https://instapipe.net" target="_blank">instapipe.net</a></p>
                 </div>
                 <div id="storyProgressBar"></div>
                 <div id="storyBackButton" class="storyButton" onclick="userDidClickPreviousStory()">
@@ -44,7 +44,7 @@
         <div id="grid">
             <% @posts.each do |post| %>
                 <div class="post">
-                    <a href="<%= post[:permalink] %>" target="_blank">
+                    <a target="_blank" href="<%= post[:permalink] %>" target="_blank">
                         <img src="<%= post[:thumbnail_url] %>" />
                     </a>
                 </div>
@@ -513,20 +513,20 @@
         <p>Due to lack of an official API, and any kinds of integrations, the only way to access your stories is through the unofficial API the Instagram mobile- and web client use.</p>
         <h2 id="solution">Solution</h2>
         <p>
-            <a href="https://twitter.com/KrauseFx"><img src="https://img.shields.io/badge/author-@KrauseFx-blue.svg?style=flat" alt="" /></a>
+            <a  target="_blank" href="https://twitter.com/KrauseFx"><img src="https://img.shields.io/badge/author-@KrauseFx-blue.svg?style=flat" alt="" /></a>
         </p>
-        <p>A simple web service that automatically downloads and publishes your stories on various platforms. It's open source and fully self hosted, check it out <a href="https://github.com/KrauseFx/instapipe">on GitHub</a>.</p>
+        <p>A simple web service that automatically downloads and publishes your stories on various platforms. It's open source and fully self hosted, check it out <a target="_blank" href="https://github.com/KrauseFx/instapipe">on GitHub</a>.</p>
         <h3 id="embed-into-websites">Embed into websites</h3>
         <p>
-            <a href="https://howisfelix.today">
+            <a target="_blank" href="https://howisfelix.today">
                 <img src="assets/howisfelixScreenshot.jpg" />
             </a>
         </p>
         <p>Showing what you're up to on the websites you operate is an easy way to make your online presence more personal.</p>
         <ul>
-            <li><a href="https://howisfelix.today">On howisfelix.today</a></li>
-            <li><a href="https://krausefx.com">Integrated into krausefx.com</a> (desktop only)</li>
-            <li><a href="https://instapipe.net">instapipe.net</a></li>
+            <li><a target="_blank" href="https://howisfelix.today">On howisfelix.today</a></li>
+            <li><a target="_blank" href="https://krausefx.com">Integrated into krausefx.com</a> (desktop only)</li>
+            <li><a target="_blank" href="https://instapipe.net">instapipe.net</a></li>
         </ul>
         <p><strong>Features</strong></p>
         <ul>
@@ -576,22 +576,18 @@
         </ul>
         <p>The above metrics should only give you a rough idea on how many people have watched stories, no personal data is stored from the users, I don't want this to be the reason to add a cookie warning to a website.</p>
         <h2 id="can-i-use-it">Can I use it?</h2>
-        <p>For now, you'll have to be an engineer to be able to use it, as instapipe.net is completely self-hosted. Check out the <a href="https://github.com/krausefx/instapipe">GitHub repo</a> to access instructions and the source code, in particular
-            <a href="https://github.com/KrauseFx/instapipe/blob/master/DEVELOPMENT.md"><code>DEVELOPMENT.md</code></a>.</p>
-        <p>If you're not an engineer, and are interested in using this on your website, via a Telegram channel or another platform, please drop me a message on <a href="https://twitter.com/KrauseFx">Twitter@KrauseFx</a> or <a href="https://instagram.com/KrauseFx">Instagram@KrauseFx</a>,
+        <p>For now, you'll have to be an engineer to be able to use it, as instapipe.net is completely self-hosted. Check out the <a target="_blank" href="https://github.com/krausefx/instapipe">GitHub repo</a> to access instructions and the source code.</p>
+        <p>If you're not an engineer, and are interested in using this on your website, via a Telegram channel or another platform, please drop me a message on <a target="_blank" href="https://twitter.com/KrauseFx">Twitter@KrauseFx</a> or <a target="_blank" href="https://instagram.com/KrauseFx">Instagram@KrauseFx</a>,
             so I can see if demand is there to put in the extra work to provide instapipe as a service.</p>
         <h2 id="potential">Potential</h2>
         <p>This is just the beginning, highly optimized for what I needed the bot for. There are so many other interesting things that could be built on top.</p>
         <h3 id="plug--play-integrations">Plug &amp; Play integrations</h3>
-        <p>Right now Telegram and the API are hard-coded. However ideally you could write plugins or integrations to pipe the data over to any other platform. Maybe even an integration with <a href="https://ifttt.com">IFTTT</a> would make sense (<a href="https://github.com/KrauseFx/instapipe/issues/13">#13</a>).</p>
+        <p>Right now Telegram and the API are hard-coded. However ideally you could write plugins or integrations to pipe the data over to any other platform. Maybe even an integration with <a target="_blank" href="https://ifttt.com">IFTTT</a> would make sense (<a target="_blank" href="https://github.com/KrauseFx/instapipe/issues/13">#13</a>).</p>
         <h3 id="rendering-of-a-mapglobe">Rendering of a map/globe</h3>
-        <p>A map or a 3D globe, moving around, as the stories are rendered or maybe even a map view, with the stories on the map, onclick renders the story (<a href="https://github.com/KrauseFx/instapipe/issues/12">#12</a>).</p>
+        <p>A map or a 3D globe, moving around, as the stories are rendered or maybe even a map view, with the stories on the map, onclick renders the story (<a target="_blank" href="https://github.com/KrauseFx/instapipe/issues/12">#12</a>).</p>
         <h3 id="embed-pinned-stories">Embed pinned stories</h3>
-        <p>Integrating your pinned stories onto your website would be a cool feature, however I didn't need it for myself (<a href="https://github.com/KrauseFx/instapipe/issues/3">#3</a>).</p>
+        <p>Integrating your pinned stories onto your website would be a cool feature, however I didn't need it for myself (<a target="_blank" href="https://github.com/KrauseFx/instapipe/issues/3">#3</a>).</p>
         <p><br /></p>
-        <p style="margin-bottom: 0px;">
-            <small>Website generated using <a href="https://markdown-to-github-style-web.com/" target="_blank">markdown-to-html-github-style.com</a></small></p>
-
     </div>
     <style type='text/css'>
         body {
