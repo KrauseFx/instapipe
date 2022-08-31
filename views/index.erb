@@ -341,12 +341,18 @@
                 text-align: center;
                 text-justify: inter-word;
             }
+
+            @media (max-width: 600px) {
+                #storyViewer>#storyContent {
+                    margin-top: 30px;
+                }
+            }
             
             #storyViewer>#storyContent {
                 width: 512px;
                 max-width: 80%;
+                margin-top: 10px;
                 /* for mobile devices */
-                margin-top: 30px;
                 display: inline-block;
                 /* 
     To get the right aspect ratio, while still having a dynamic content size
@@ -489,9 +495,6 @@
                 text-decoration: none;
             }
         </style>
-        <% if @stories_available %>
-            <p style="text-align: center;"><b>⬆️ Give it a try, click on the picture ⬆️</b></p>
-        <% end %>
 
         <div style="display: none">
             <a href="<%= @login_url %>" class="btn btn-primary">Login to start using Instapipe (this requires a Facebook Business Account)</a>
