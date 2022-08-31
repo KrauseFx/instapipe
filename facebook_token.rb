@@ -70,12 +70,15 @@ module Instapipe
         # Use the token to get the User ID so we can store it in the db
         url = URI("https://graph.facebook.com/v14.0/me/accounts")
         url.query = URI.encode_www_form(access_token: access_token)
+        puts "Got access token, now fetching accounts"
         res = JSON.parse(Net::HTTP.get_response(url).body)
+        puts "Response #{res["data"]}"
         stories_app = res["data"].find { |app| app["name"] == "Krausefxstories" }
+        puts "stories_app: #{stories_app}"
         stories_app_access_token = stories_app["access_token"]
         stories_app_id = stories_app["id"]
 
-        # Use the pages' token to get the Instagram Business User ID
+        puts "Use the pages' token to get the Instagram Business User ID"
         url = URI("https://graph.facebook.com/v14.0/#{stories_app_id}")
         url.query = URI.encode_www_form(fields: "instagram_business_account", access_token: stories_app_access_token)
         res = JSON.parse(Net::HTTP.get_response(url).body)
