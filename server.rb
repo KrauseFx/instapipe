@@ -83,6 +83,20 @@ get "/didOpenStories" do
 
   "Success"
 end
+
+get '/assets/*' do
+  if [
+    "/assets/apiScreenshot.jpg",
+    "/assets/databaseScreenshot.jpg",
+    "/assets/howisfelixScreenshot.jpg",
+    "/assets/telegramScreenshot.jpg",
+  ].include?(request.path)
+    return send_file(File.join(".", request.path))
+  else
+    return nil
+  end
+end
+
 # Helpers
 
 def stories_json(user_id)
@@ -105,6 +119,7 @@ def stories_json(user_id)
     }
   end.compact
 end
+
 def posts_json(user_id)
   all_posts = Database.database[:posts].where(user_id: user_id).order_by(:timestamp).reverse.to_a
   all_posts_ig_ids = all_posts.collect { |a| a[:ig_id] }.uniq

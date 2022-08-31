@@ -9,7 +9,7 @@
 <body>
     <div id='content'>
         <h1 style="text-align: center;">instapipe.net</h1>
-        <% if @stories_available %>
+        <% if @stories.count > 0 %>
             <div id="story-available" class="story-not-available">
                 <img src="https://krausefx.com/assets/FelixKrauseCropped.jpg" id="storyProfilePicture" onclick="showStories()" />
             </div>
@@ -518,16 +518,15 @@
         <p>A simple web service that automatically downloads and publishes your stories on various platforms. It's open source and fully self hosted, check it out <a href="https://github.com/KrauseFx/instapipe">on GitHub</a>.</p>
         <h3 id="embed-into-websites">Embed into websites</h3>
         <p>
-            <a href="https://whereisfelix.today">
-                <img src="assets/whereisfelixScreenshot.jpg" />
+            <a href="https://howisfelix.today">
+                <img src="assets/howisfelixScreenshot.jpg" />
             </a>
         </p>
         <p>Showing what you're up to on the websites you operate is an easy way to make your online presence more personal.</p>
         <ul>
-            <li><a href="https://whereisfelix.today">On whereisfelix.today</a></li>
+            <li><a href="https://howisfelix.today">On howisfelix.today</a></li>
             <li><a href="https://krausefx.com">Integrated into krausefx.com</a> (desktop only)</li>
-            <li><a href="https://krausefx.github.io/instapipe/web/index.html">Plain live demo</a></li>
-            <li><a href="">Top of this page</a></li>
+            <li><a href="https://instapipe.net">instapipe.net</a></li>
         </ul>
         <p><strong>Features</strong></p>
         <ul>
@@ -585,14 +584,10 @@
         <p>This is just the beginning, highly optimized for what I needed the bot for. There are so many other interesting things that could be built on top.</p>
         <h3 id="plug--play-integrations">Plug &amp; Play integrations</h3>
         <p>Right now Telegram and the API are hard-coded. However ideally you could write plugins or integrations to pipe the data over to any other platform. Maybe even an integration with <a href="https://ifttt.com">IFTTT</a> would make sense (<a href="https://github.com/KrauseFx/instapipe/issues/13">#13</a>).</p>
-        <h3 id="multi-user-support">Multi-user support</h3>
-        <p>Right now, this project only supports a single user at a time. It's designed in a way to support any number of users in the future (<a href="https://github.com/KrauseFx/instapipe/issues/new">#22</a>).</p>
         <h3 id="rendering-of-a-mapglobe">Rendering of a map/globe</h3>
         <p>A map or a 3D globe, moving around, as the stories are rendered or maybe even a map view, with the stories on the map, onclick renders the story (<a href="https://github.com/KrauseFx/instapipe/issues/12">#12</a>).</p>
         <h3 id="embed-pinned-stories">Embed pinned stories</h3>
         <p>Integrating your pinned stories onto your website would be a cool feature, however I didn't need it for myself (<a href="https://github.com/KrauseFx/instapipe/issues/3">#3</a>).</p>
-        <h3 id="provide-rss-feed">Provide RSS feed</h3>
-        <p>Publishing an RSS feed would be an easy way to integrate into various services, including IFTTT (<a href="https://github.com/KrauseFx/instapipe/issues/6">#6</a>).</p>
         <p><br /></p>
         <p style="margin-bottom: 0px;">
             <small>Website generated using <a href="https://markdown-to-github-style-web.com/" target="_blank">markdown-to-html-github-style.com</a></small></p>
