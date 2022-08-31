@@ -35,6 +35,8 @@ class Database
         String :username
         Integer :timestamp
         String :user_id
+        Integer :comments_count
+        Integer :like_count
 
         # Media entry
         Boolean :is_video
