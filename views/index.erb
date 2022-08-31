@@ -1,11 +1,9 @@
 <html>
-
-<head>
-    <title>instapipe.net</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script defer data-domain="instapipe.net" src="https://plausible.io/js/plausible.js"></script>
-</head>
-
+    <head>
+        <title>instapipe.net</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script defer data-domain="instapipe.net" src="https://plausible.io/js/plausible.js"></script>
+    </head>
 <body>
     <div id='content'>
         <h1 style="text-align: center;">instapipe.net</h1>
@@ -45,6 +43,11 @@
             <% @posts.each do |post| %>
                 <div class="post">
                     <a target="_blank" href="<%= post[:permalink] %>" target="_blank">
+                        <% if post[:media].count > 1 %>
+                            <div class="multiple-media-items-node">
+                                <?xml version="1.0" encoding="UTF-8"?><svg width="19px" height="19px" stroke-width="1.47" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff"><path d="M21 7.6v12.8a.6.6 0 01-.6.6H7.6a.6.6 0 01-.6-.6V7.6a.6.6 0 01.6-.6h12.8a.6.6 0 01.6.6z" stroke="#ffffff" stroke-width="1.47" stroke-linecap="round" stroke-linejoin="round"></path><path d="M18 4H4.6a.6.6 0 00-.6.6V18M7 16.8l5.444-1.8L21 18M16.5 13a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" stroke="#ffffff" stroke-width="1.47" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            </div>
+                        <% end %>
                         <img src="<%= post[:thumbnail_url] %>" />
                     </a>
                 </div>
@@ -72,6 +75,12 @@
                 height: 100%;
                 object-fit: cover;
             }
+            #grid .multiple-media-items-node {
+                position: absolute;
+                padding: 10px;
+            }
+
+            /* TODO: move lower */
             #username > a {
                 color: #333 !important;
             }

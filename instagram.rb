@@ -156,9 +156,11 @@ module Instapipe
         existing_entries_query = Database.database[:posts].where(ig_id: post["ig_id"], node_ig_id: node["ig_id"])
         if existing_entries_query.count > 0
           # Only update the number of likes/comments of the post
+          puts "Updating like/comments count for post #{post["ig_id"]}"
           existing_entries_query.update(
             like_count: post["like_count"],
-            comments_count: post["comments_count"]
+            comments_count: post["comments_count"],
+            caption: base_entry["caption"] # as the caption might have changed
           )
           next
         end
