@@ -7,14 +7,12 @@
 <body>
     <div id='content'>
         <h1 style="text-align: center;">instapipe.net</h1>
-        <% if @stories.count > 0 %>
-            <div id="story-available" class="story-not-available">
-                <img src="https://krausefx.com/assets/FelixKrauseCropped.jpg" id="storyProfilePicture" onclick="showStories()" />
-            </div>
-            <div>
-                <h2 style="text-align: center;" id="username"><a target="_blank" href="https://instagram.com/KrauseFx">@KrauseFx</a></h2>
-            </div>
-        <% end %>
+        <div id="story-available" class="story-not-available">
+            <img src="https://krausefx.com/assets/FelixKrauseCropped.jpg" id="storyProfilePicture" onclick="showStories()" />
+        </div>
+        <div>
+            <h2 style="text-align: center;" id="username"><a target="_blank" href="https://instagram.com/KrauseFx">@KrauseFx</a></h2>
+        </div>
         <div id="storyViewer">
             <div id="storyViewerDimmedBackground" onclick="dismissStories()"></div>
             <div id="storyContent">
@@ -78,11 +76,6 @@
             #grid .multiple-media-items-node {
                 position: absolute;
                 padding: 10px;
-            }
-
-            /* TODO: move lower */
-            #username > a {
-                color: #333 !important;
             }
         </style>
 
@@ -794,6 +787,12 @@
             border-bottom: 1px solid #eaecef;
             color: #111;
             /* Darker */
+        }
+        #username > a {
+            color: #333 !important;
+        }
+        #username {
+            margin-top: -10px;
         }
     </style>
 </body>

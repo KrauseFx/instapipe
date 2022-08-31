@@ -19,7 +19,6 @@ get '/' do
 
   @login_url = @login_url.to_s
   @krausefx_user_id = ENV.fetch("KRAUSEFX_USER_FOR_DEMO")
-  @stories = stories_json(@krausefx_user_id)
   @posts = posts_json(@krausefx_user_id)
 
   erb :index
