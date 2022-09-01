@@ -82,19 +82,26 @@ module Instapipe
 
       # Verify we can fetch the stories
       uri = URI("https://graph.facebook.com/v14.0/#{user_id}/stories")
-      uri.query = URI.encode_www_form(
-        fields: "caption",
-        access_token: access_token
-      )
+      uri.query = URI.encode_www_form(fields: "caption", access_token: access_token)
       begin
         res = Net::HTTP.get_response(uri)
         if res.code == "200" && JSON.parse(res.body)["data"].kind_of?(Array)
-          puts "Success, API token works"
+          binding.pry
+          uri = URI("https://graph.facebook.com/v14.0/#{user_id}/posts")
+          uri.query = URI.encode_www_form(fields: "ig_id,caption", access_token: access_token)
+          if res.code == "200" && JSON.parse(res.body)["data"].kind_of?(Array)
+            puts "Success, API token works"
+          else
+            binding.pry
+            raise "Something is off"
+          end
+        else
+          binding.pry
+          raise "Something is off"
         end
       rescue => ex
         raise ex
       end
-
 
       # Check if we have an existing entry, if so we need to update that one
       if Database.database[:facebook_access_tokens].where(user_id: @user_id).count > 0
