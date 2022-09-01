@@ -66,9 +66,6 @@ module Instapipe
         raise "Could not find stories app"
       end
 
-      # TODO: Error handling here
-      # The `res["data"]` list is empty, if the associated Instagram account isn't a business account
-
       puts "stories_app: #{stories_app}"
       stories_app_access_token = stories_app["access_token"]
       stories_app_id = stories_app["id"]
@@ -81,14 +78,14 @@ module Instapipe
       puts "Found business user id #{@user_id}"
 
       # Verify we can fetch the stories
-      uri = URI("https://graph.facebook.com/v14.0/#{user_id}/stories")
-      uri.query = URI.encode_www_form(fields: "caption", access_token: access_token)
+      uri = URI("https://graph.facebook.com/v14.0/#{@user_id}/stories")
+      uri.query = URI.encode_www_form(fields: "caption", access_token: stories_app_access_token)
       begin
         res = Net::HTTP.get_response(uri)
         if res.code == "200" && JSON.parse(res.body)["data"].kind_of?(Array)
-          binding.pry
-          uri = URI("https://graph.facebook.com/v14.0/#{user_id}/posts")
-          uri.query = URI.encode_www_form(fields: "ig_id,caption", access_token: access_token)
+          uri = URI("https://graph.facebook.com/v14.0/#{@user_id}/media")
+          uri.query = URI.encode_www_form(fields: "ig_id,caption", access_token: stories_app_access_token)
+          res = Net::HTTP.get_response(uri)
           if res.code == "200" && JSON.parse(res.body)["data"].kind_of?(Array)
             puts "Success, API token works"
           else
@@ -107,7 +104,7 @@ module Instapipe
       if Database.database[:facebook_access_tokens].where(user_id: @user_id).count > 0
         puts "we've had a token before, but we will update it"
         Database.database[:facebook_access_tokens].where(user_id: @user_id).update({
-          user_access_token_used: access_token,
+          user_access_token_used: stories_app_access_token,
           long_lived_access_token: nil,
           expires_at: nil
         })
@@ -115,7 +112,7 @@ module Instapipe
         puts "A new user"
         Database.database[:facebook_access_tokens].insert({
           user_id: @user_id,
-          user_access_token_used: access_token,
+          user_access_token_used: stories_app_access_token,
           long_lived_access_token: nil
         })
       end
