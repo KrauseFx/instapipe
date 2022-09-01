@@ -16,6 +16,7 @@ get '/' do
     redirect_uri: REDIRECT_URI,
     state: "instapipe",
     response_type: "token",
+    scope: "pages_show_list,instagram_basic,instagram_manage_insights,pages_read_engagement,pages_read_engagement",
   )
 
   @login_url = @login_url.to_s
@@ -26,7 +27,11 @@ get '/' do
 end
 
 get "/fb/auth" do
-  puts "Got auth code /fb/auth"
+  if params["access_token"].nil?
+    puts "Got auth code /fb/auth, however it's being passed as dumb fragment, so we gotta reload the page and have it be a proper GET parameter"
+    return "<script>window.location.href = window.location.href.replace(\"#\", \"\");</script>"
+  end
+
   access_token = params.fetch("access_token")
 
   fb_token = Instapipe::FacebookToken.new
