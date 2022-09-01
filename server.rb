@@ -14,7 +14,8 @@ get '/' do
   @login_url.query = URI.encode_www_form(
     client_id: ENV.fetch("INSTAGRAM_APP_ID"),
     redirect_uri: REDIRECT_URI,
-    state: "instapipe"
+    state: "instapipe",
+    response_type: "token",
   )
 
   @login_url = @login_url.to_s
@@ -26,10 +27,10 @@ end
 
 get "/fb/auth" do
   puts "Got auth code /fb/auth"
-  code = params.fetch("code")
+  access_token = params.fetch("access_token")
 
   fb_token = Instapipe::FacebookToken.new
-  fb_token.new_login_flow(code: code)
+  fb_token.new_login_flow(access_token: access_token)
 
   # Render success page
   return "Success, from now on we will follow your stories"

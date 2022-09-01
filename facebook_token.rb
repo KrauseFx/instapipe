@@ -53,58 +53,50 @@ module Instapipe
       end
     end
 
-    def new_login_flow(code:)
-      # Now use the token to get an access token
-      url = URI("https://graph.facebook.com/v14.0/oauth/access_token")
-      url.query = URI.encode_www_form(
-        client_id: ENV.fetch("INSTAGRAM_APP_ID"),
-        redirect_uri: REDIRECT_URI,
-        client_secret: ENV.fetch("INSTAGRAM_APP_SECRET"),
-        code: code
-      )
-
-      res = Net::HTTP.get_response(url)
-      parsed = JSON.parse(res.body)
-      if parsed["access_token"]
-        access_token = parsed["access_token"]
-        # Use the token to get the User ID so we can store it in the db
-        url = URI("https://graph.facebook.com/v14.0/me/accounts")
-        url.query = URI.encode_www_form(access_token: access_token)
-        puts "Got access token, now fetching accounts"
-        res = JSON.parse(Net::HTTP.get_response(url).body)
-        puts "Response #{res["data"]}"
-        stories_app = res["data"].find { |app| app["name"] == "Krausefxstories" }
-        puts "stories_app: #{stories_app}"
-        stories_app_access_token = stories_app["access_token"]
-        stories_app_id = stories_app["id"]
-
-        puts "Use the pages' token to get the Instagram Business User ID"
-        url = URI("https://graph.facebook.com/v14.0/#{stories_app_id}")
-        url.query = URI.encode_www_form(fields: "instagram_business_account", access_token: stories_app_access_token)
-        res = JSON.parse(Net::HTTP.get_response(url).body)
-        @user_id = res["instagram_business_account"].fetch("id")
-        puts "Found business user id #{@user_id}"
-
-        # Check if we have an existing entry, if so we need to update that one
-        if Database.database[:facebook_access_tokens].where(user_id: @user_id).count > 0
-          puts "we've had a token before, but we will update it"
-          Database.database[:facebook_access_tokens].where(user_id: @user_id).update({
-            user_access_token_used: access_token,
-            long_lived_access_token: nil,
-            expires_at: nil
-          })
-        else
-          puts "A new user"
-          Database.database[:facebook_access_tokens].insert({
-            user_id: @user_id,
-            user_access_token_used: access_token,
-            long_lived_access_token: nil
-          })
-        end
-        self.generate_long_lived_access_token
-      else
-        raise "No access token: #{parsed}"
+    def new_login_flow(access_token:)
+      # Use the access_token to get the User ID so we can store it in the db
+      url = URI("https://graph.facebook.com/v14.0/me/accounts")
+      url.query = URI.encode_www_form(access_token: access_token)
+      puts "Got access token, now fetching accounts"
+      res = JSON.parse(Net::HTTP.get_response(url).body)
+      puts "Response #{res["data"]}"
+      stories_app = res["data"].find { |app| app["name"] == "Krausefxstories" }
+      if stories_app.nil?
+        puts res
+        raise "Could not find stories app"
       end
+
+      # TODO: Error handling here
+      # The `res["data"]` list is empty, if the associated Instagram account isn't a business account
+
+      puts "stories_app: #{stories_app}"
+      stories_app_access_token = stories_app["access_token"]
+      stories_app_id = stories_app["id"]
+
+      puts "Use the pages' token to get the Instagram Business User ID"
+      url = URI("https://graph.facebook.com/v14.0/#{stories_app_id}")
+      url.query = URI.encode_www_form(fields: "instagram_business_account", access_token: stories_app_access_token)
+      res = JSON.parse(Net::HTTP.get_response(url).body)
+      @user_id = res.fetch("instagram_business_account", {})["id"] || res["id"]
+      puts "Found business user id #{@user_id}"
+
+      # Check if we have an existing entry, if so we need to update that one
+      if Database.database[:facebook_access_tokens].where(user_id: @user_id).count > 0
+        puts "we've had a token before, but we will update it"
+        Database.database[:facebook_access_tokens].where(user_id: @user_id).update({
+          user_access_token_used: access_token,
+          long_lived_access_token: nil,
+          expires_at: nil
+        })
+      else
+        puts "A new user"
+        Database.database[:facebook_access_tokens].insert({
+          user_id: @user_id,
+          user_access_token_used: access_token,
+          long_lived_access_token: nil
+        })
+      end
+      self.generate_long_lived_access_token
     rescue => ex
       puts ex.message
       puts ex.backtrace.join("\n")
