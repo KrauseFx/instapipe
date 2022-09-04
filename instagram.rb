@@ -93,6 +93,10 @@ module Instapipe
         puts "Story with ID #{story["ig_id"]} already stored"
         return nil
       end
+      if story["media_url"].nil?
+        puts "No media URL for this story, this might be a video with a sound tag on, so we don't seem to get access"
+        return nil
+      end
       res = download_and_store_asset(
         ig_id: story["ig_id"], 
         file_name_to_use: story["id"], 
