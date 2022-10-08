@@ -104,6 +104,7 @@ module Instapipe
         expires: 24 * 60 * 60,
         prefix_folder: nil
       )
+      return if res.nil?
 
       # Fill in the basic metadata
       new_entry = {
@@ -176,6 +177,7 @@ module Instapipe
           expires: 5 * 365 * 24 * 60 * 60,
           prefix_folder: "posts"
         )
+        next if res.nil?
         new_entry = base_entry.dup.merge(
           is_video: file_type(res[:file_path]) == :video,
           signed_url: res[:signed_url],
@@ -234,6 +236,9 @@ module Instapipe
         signed_url: created_file.signed_url(method: "GET", expires: expires),
         output_path: output_path
       }
+    rescue => ex
+      puts ex
+      return nil
     end
 
     # Detect if it's a video or photo that was posted
