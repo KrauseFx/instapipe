@@ -44,10 +44,10 @@ module Instapipe
       rescue => ex
         puts ex.message
         puts ex.backtrace.join("\n")
-        self.telegram_client.api.send_message(
-          chat_id: telegram_chat_id,
-          text: "Instagram API error, please investigate"
-        ) if telegram_chat_id
+        # self.telegram_client.api.send_message(
+        #   chat_id: telegram_chat_id,
+        #   text: "Instagram API error, please investigate"
+        # ) if telegram_chat_id
 
         raise "error #{res}"
       end
@@ -58,7 +58,7 @@ module Instapipe
       puts "No Telegram Chat ID provided for user #{user_id}" unless telegram_chat_id
       uri = URI("https://graph.facebook.com/v14.0/#{user_id}/media")
       uri.query = URI.encode_www_form(
-        fields: "caption,id,username,ig_id,like_count,comments_count,media_product_type,media_type,media_url,permalink,thumbnail_url,timestamp,comments,children{media_url,thumbnail_url,ig_id,media_type}",
+        fields: "caption,id,username,ig_id,like_count,comments_count,media_product_type,media_type,media_url,permalink,timestamp,comments,children{media_url,thumbnail_url,ig_id,media_type}",
         access_token: self.access_token
       )
       begin
@@ -78,10 +78,10 @@ module Instapipe
       rescue => ex
         puts ex.message
         puts ex.backtrace.join("\n")
-        self.telegram_client.api.send_message(
-          chat_id: telegram_chat_id,
-          text: "Instagram API error, please investigate"
-        ) if telegram_chat_id
+        # self.telegram_client.api.send_message(
+        #   chat_id: telegram_chat_id,
+        #   text: "Instagram API error, please investigate"
+        # ) if telegram_chat_id
 
         raise "error #{res}"
       end
@@ -215,10 +215,10 @@ module Instapipe
         puts ex.message
         puts ex.backtrace.join("\n")
         # Send message to Telegram
-        self.telegram_client.api.send_message(
-          chat_id: telegram_chat_id,
-          text: "Instagram API error, please investigate"
-        )
+        # self.telegram_client.api.send_message(
+        #   chat_id: telegram_chat_id,
+        #   text: "Instagram API error, please investigate"
+        # )
       end
     end
 
