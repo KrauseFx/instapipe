@@ -45,3 +45,7 @@ bundle exec ruby generate_widget.rb
 ```
 
 This will generate `instapipe.html`, a single file containing all the "dependencies" needed
+
+## Refresh Instagram Session/Token
+
+No more need to manually interact with the server. Just go to https://instapipe.net/ and start the auth flow again
